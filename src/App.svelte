@@ -1,13 +1,16 @@
 <script lang="ts">
 	import Login from './lib/Login.svelte';
-	import { token } from './stores';
+	import Main from './lib/Main.svelte';
+	import { token, url } from './stores';
+
+	$: token && setInterval(refresh, 1000 * 60 * 5);
 
 	console.log($token);
 
-	async function refresh() {
+	async function check() {
 		if ($token == 'undefined') return;
 
-		const response = await fetch('http://localhost:3000/api/auth/check', {
+		const response = await fetch(`${url}/api/auth/check`, {
 			headers: {
 				Authorization: 'Basic ' + $token,
 				'Access-Control-Allow-Headers': 'Authorization',
@@ -15,21 +18,34 @@
 			},
 		});
 
-		console.log(response);
+		if (response.ok) return;
 
-		return await new Promise((resolve, reject) => {
-			setTimeout(resolve, 3000);
+		token.set('undefined');
+	}
+
+	async function refresh() {
+		const response = await fetch(`${url}/api/auth/refresh`, {
+			headers: {
+				Authorization: 'Basic ' + $token,
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
 		});
+
+		if (response.ok) {
+			return token.set(await response.text());
+		}
+
+		return token.set('undefined');
 	}
 </script>
 
-{#await refresh()}
+{#await check()}
 	loading
-{:then name}
-	{name}
+{:then _}
 	<div class="min-h-screen">
 		{#if $token !== 'undefined'}
-			<p>logged in</p>
+			<Main />
 		{:else}
 			<Login />
 		{/if}

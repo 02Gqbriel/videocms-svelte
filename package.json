@@ -4,12 +4,10 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "npm-run-all -p dev:vite backend",
-		"dev:vite": "vite",
+		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview",
-		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"backend": "cd ./backend && start console.exe database:fresh seed:adminuser && start main.exe"
+		"check": "svelte-check --tsconfig ./tsconfig.json"
 	},
 	"devDependencies": {
 		"@sveltejs/vite-plugin-svelte": "^2.0.2",

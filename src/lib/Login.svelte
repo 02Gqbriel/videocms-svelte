@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { token } from '../stores';
+	import { token, url } from '../stores';
 
 	let loading: boolean = false;
 
@@ -15,7 +15,7 @@
 		formData.append('username', username);
 		formData.append('password', password);
 
-		const response = await fetch('http://localhost:3000/api/auth/login', {
+		const response = await fetch(`${url}/api/auth/login`, {
 			method: 'POST',
 			body: formData,
 		});
@@ -70,7 +70,7 @@
 
 	<button
 		type="submit"
-		class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center mt-5"
+		class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center mt-5 mb-10"
 	>
 		{#if loading}
 			<svg
