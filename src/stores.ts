@@ -18,4 +18,4 @@ tokenExp.subscribe(
 
 const local = 'http://localhost:3000';
 
-export const url = import.meta.env.API_URL ?? local;
+export const url = import.meta.env.API_URL ?? '';

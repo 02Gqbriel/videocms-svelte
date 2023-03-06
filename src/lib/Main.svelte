@@ -145,7 +145,7 @@
 <header class="w-screen flex justify-between items-center p-3">
 	<h1><img src="/logo.png" alt="logo" class="w-10" /></h1>
 
-	<div class="flex gap-5 text-sm items-center">
+	<div class="flex gap-3 text-sm items-center">
 		<button class="flex items-center gap-2  px-3 py-1.5 rounded">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
