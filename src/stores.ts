@@ -1,12 +1,21 @@
 import { writable } from 'svelte/store';
 
-const stored = (localStorage.token as string) ?? 'undefined';
+const storedToken = (sessionStorage.token as string) ?? undefined;
 
-export const token = writable<string>(stored);
+export const token = writable<string>(storedToken);
 
-token.subscribe(value => value !== 'undefined' && (localStorage.token = value));
+token.subscribe(
+	value => value !== 'undefined' && (sessionStorage.token = value)
+);
+
+const storedTokenExp = (sessionStorage.tokenExp as string) ?? undefined;
+
+export const tokenExp = writable<string>(storedTokenExp);
+
+tokenExp.subscribe(
+	value => value !== 'undefined' && (sessionStorage.tokenExp = value)
+);
 
 const local = 'http://localhost:3000';
-const online = 'https://videocms.senpai.one';
 
 export const url = import.meta.env.API_URL ?? local;

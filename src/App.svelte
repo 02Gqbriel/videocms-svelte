@@ -1,11 +1,5 @@
 <script lang="ts">
-	import Login from './lib/Login.svelte';
-	import Main from './lib/Main.svelte';
-	import { token, url } from './stores';
-
-	$: token && setInterval(refresh, 1000 * 60 * 5);
-
-	console.log($token);
+	import { token, tokenExp, url } from './stores';
 
 	async function check() {
 		if ($token == 'undefined') return;
@@ -18,36 +12,36 @@
 			},
 		});
 
-		if (response.ok) return;
+		if (response.ok) {
+			const json = (await response.json()) as { exp: string; username: string };
+
+			const { exp, username } = json;
+
+			const date = Date.parse(exp);
+
+			tokenExp.set(date.toString());
+
+			return;
+		}
 
 		token.set('undefined');
 	}
-
-	async function refresh() {
-		const response = await fetch(`${url}/api/auth/refresh`, {
-			headers: {
-				Authorization: 'Basic ' + $token,
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-		});
-
-		if (response.ok) {
-			return token.set(await response.text());
-		}
-
-		return token.set('undefined');
-	}
 </script>
 
-{#await check()}
-	loading
-{:then _}
-	<div class="min-h-screen">
-		{#if $token !== 'undefined'}
-			<Main />
-		{:else}
-			<Login />
-		{/if}
-	</div>
-{/await}
+<div class="text-gray-200 bg-neutral-900">
+	{#await check()}
+		loading
+	{:then _}
+		<div class="min-h-screen ">
+			{#if $token !== 'undefined'}
+				{#await import('./lib/Main.svelte') then { default: Main }}
+					<svelte:component this={Main} />
+				{/await}
+			{:else}
+				{#await import('./lib/Login.svelte') then { default: Login }}
+					<svelte:component this={Login} />
+				{/await}
+			{/if}
+		</div>
+	{/await}
+</div>
