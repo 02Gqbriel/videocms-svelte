@@ -1,8 +1,11 @@
 <script lang="ts">
 	import moment from 'moment';
 	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
+	import { get, writable } from 'svelte/store';
 	import { token, tokenExp, url } from '../stores';
+	import File from './File.svelte';
+
+	let fileUpload = writable<boolean>(false);
 
 	onMount(() => {
 		if (!Number.isNaN(Number(get(tokenExp)))) {
@@ -142,6 +145,12 @@
 	}
 </script>
 
+{#if $fileUpload}
+	{#await import('./File.svelte') then { default: File }}
+		<svelte:component this={File} {fileUpload} />
+	{/await}
+{/if}
+
 <header class="w-screen flex justify-between items-center p-3">
 	<h1><img src="/logo.png" alt="logo" class="w-10" /></h1>
 
@@ -162,6 +171,7 @@
 			<span> New folder</span>
 		</button>
 		<button
+			on:click={() => fileUpload.set(true)}
 			class="flex items-center gap-2 bg-blue-700 px-3 py-1.5 rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
 		>
 			<svg
@@ -196,7 +206,7 @@
 				<th class="p-3 w-6" />
 				<th class="p-3">Filename</th>
 				<th class="p-3">Created</th>
-				<th class="p-3">UserID</th>
+				<th class="p-3">Last Updated</th>
 				<th class="p-3 text-right">{''}</th>
 			</tr>
 		</thead>
@@ -219,16 +229,29 @@
 						class="border-b border-opacity-20 border-gray-300  cursor-pointer hover:bg-neutral-800/50"
 					>
 						<td class="p-3">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								class="w-5 h-5 fill-blue-700"
-							>
-								<path
-									d="M3.75 3A1.75 1.75 0 002 4.75v3.26a3.235 3.235 0 011.75-.51h12.5c.644 0 1.245.188 1.75.51V6.75A1.75 1.75 0 0016.25 5h-4.836a.25.25 0 01-.177-.073L9.823 3.513A1.75 1.75 0 008.586 3H3.75zM3.75 9A1.75 1.75 0 002 10.75v4.5c0 .966.784 1.75 1.75 1.75h12.5A1.75 1.75 0 0018 15.25v-4.5A1.75 1.75 0 0016.25 9H3.75z"
-								/>
-							</svg>
+							{#if item.Type == 'File'}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+									class="w-5 h-5 fill-blue-700"
+								>
+									<path
+										d="M3 3.5A1.5 1.5 0 014.5 2h6.879a1.5 1.5 0 011.06.44l4.122 4.12A1.5 1.5 0 0117 7.622V16.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 16.5v-13z"
+									/>
+								</svg>
+							{:else}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+									class="w-5 h-5 fill-blue-700"
+								>
+									<path
+										d="M3.75 3A1.75 1.75 0 002 4.75v3.26a3.235 3.235 0 011.75-.51h12.5c.644 0 1.245.188 1.75.51V6.75A1.75 1.75 0 0016.25 5h-4.836a.25.25 0 01-.177-.073L9.823 3.513A1.75 1.75 0 008.586 3H3.75zM3.75 9A1.75 1.75 0 002 10.75v4.5c0 .966.784 1.75 1.75 1.75h12.5A1.75 1.75 0 0018 15.25v-4.5A1.75 1.75 0 0016.25 9H3.75z"
+									/>
+								</svg>
+							{/if}
 						</td>
 
 						<td class="p-3">
@@ -240,10 +263,10 @@
 						</td>
 
 						<td class="p-3">
-							{item.UserID}
+							{moment(item.UpdatedAt).fromNow()}
 						</td>
 
-						<td class="p-1 float-right ">
+						<td class="p-2 float-right flex items-center h-max ">
 							<span class="sm:hidden inline">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
