@@ -29,14 +29,10 @@
 
 			token.set(tokenNew);
 
-			console.log(moment(Date.now()).add(4.5, 'minute').isSameOrBefore(exp));
-
 			tokenExp.set(Date.parse(exp).toString());
 
 			return;
 		}
-
-		console.log(response);
 
 		loading = false;
 	}
@@ -51,8 +47,7 @@
 	<h1 class="text-5xl  font-bold mb-5">Login</h1>
 
 	<fieldset class="">
-		<label for="username" class="block mb-2 text-sm font-medium">Username</label
-		>
+		<label for="username" class="block mb-2 text-sm font-medium">Username</label>
 		<input
 			type="text"
 			id="username"
@@ -65,9 +60,7 @@
 	</fieldset>
 
 	<fieldset class="">
-		<label for="password" class="block mb-2 text-sm font-medium "
-			>Password</label
-		>
+		<label for="password" class="block mb-2 text-sm font-medium ">Password</label>
 		<input
 			type="password"
 			id="password"

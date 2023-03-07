@@ -1,62 +1,74 @@
 <script lang="ts">
 	import type { Writable } from 'svelte/store';
+	import { token, url } from '../stores';
 
 	export let fileUpload: Writable<boolean>;
 
-	let fileInput;
-
-	let files: FileList;
+	let droppingOf = false;
+	let files: File[];
+	let loading: boolean = false;
 
 	$: console.log(files);
-
-	function toBase64(e: Event) {
-		getBase64(e.target.files.item(0));
-	}
 
 	function getBase64(vid) {
 		const reader = new FileReader();
 		reader.readAsDataURL(vid);
 
 		return new Promise<string>((resolve, reject) => {
-			reader.onload = e => {
+			reader.onload = (e) => {
 				resolve(reader.result as string);
 			};
 		});
 	}
-	async function uploadFunction(imgBase64) {
-		const data = {};
-		const imgData = imgBase64.split(',');
-		data['image'] = imgData[1];
-		console.log(data);
-		await fetch(`/upload`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-			},
-			body: JSON.stringify(data),
-		});
+
+	async function uploadFiles(e: SubmitEvent) {
+		e.preventDefault();
+
+		loading = true;
+		let succes = true;
+
+		for (const file of files) {
+			const formData = new FormData();
+
+			formData.append('Name', file.name);
+			formData.append('file', file);
+
+			const response = await fetch(`${url}/api/file`, {
+				method: 'POST',
+				body: formData,
+				headers: {
+					Authorization: 'Basic ' + $token,
+					'Access-Control-Allow-Headers': 'Authorization',
+					'Access-Control-Allow-Credentials': 'true',
+				},
+			});
+
+			succes = response.ok && succes;
+
+			console.log(response);
+		}
+
+		loading = false;
+
+		if (succes) {
+			fileUpload.set(false);
+		}
 	}
 </script>
 
-<div
-	class="absolute left-0 top-0 w-screen h-screen flex items-center justify-center"
->
-	<div
-		class=" relative w-screen max-w-xl min-h-min shadow-md  bg-neutral-900/50 backdrop-blur-sm p-2 rounded "
+<div class="absolute left-0 top-0 w-screen h-screen flex items-center justify-center">
+	<form
+		on:submit={uploadFiles}
+		class=" relative  w-screen max-w-xl min-h-min shadow-md  bg-neutral-900/50 backdrop-blur-sm p-2 rounded "
 	>
 		<input
 			title=""
 			type="file"
-			bind:files
-			on:input={toBase64}
+			on:input={(e) => (files = [...e.target.files])}
 			multiple
-			class="absolute left-0 top-0 h-full w-full appearance-none opacity-0 cursor-pointer"
+			class="absolute left-0 top-0 h-full w-full max-h-[370px] appearance-none opacity-0 cursor-pointer"
 		/>
-		<button
-			class="absolute top-0 right-0 m-5"
-			on:click={_ => fileUpload.set(false)}
-		>
+		<button class="absolute top-0 right-0 m-5" on:click={(_) => fileUpload.set(false)}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
@@ -69,7 +81,8 @@
 			</svg>
 		</button>
 		<div
-			class="border-2 border-dashed border-neutral-500 rounded-md h-full p-10 cursor-pointer flex flex-col justify-center items-center gap-3"
+			on:drop={(e) => console.log(e)}
+			class="border-2 border-dashed border-neutral-500 rounded-md h-full p-10 flex flex-col justify-center items-center gap-3"
 		>
 			<span>
 				<svg
@@ -113,25 +126,93 @@
 					class="w-[110%]  h-[0.5px] border border-separate border-neutral-800 px-5"
 				/>
 
-				{#each files as file}
-					{#await getBase64(file)}
-						loading.
-					{:then result}
-						<video width="320" height="240" controls>
-							<source
-								src={result}
-								type={result.split(';')[0].replace('data:', '')}
-							/>
-							<track kind="captions" />
-							Your browser does not support the video tag.
-						</video>
-					{/await}
-				{/each}
+				<div class="flex gap-x-2 flex-wrap justify-around">
+					{#each files as file}
+						{#await getBase64(file)}
+							<div
+								class="w-[45%] aspect-video animate-pulse bg-neutral-700 my-3 rounded flex items-start"
+							>
+								<span class="p-2">{file.name}</span>
+							</div>
+						{:then result}
+							<div
+								class="relative group/video w-[45%] cursor-pointer aspect-video overflow-hidden my-3 rounded-lg"
+							>
+								<video class="aspect-video object-cover ">
+									<source src={result} type={result.split(';')[0].replace('data:', '')} />
+									<track kind="captions" />
+									Your browser does not support the video tag.
+								</video>
+								<button
+									class="absolute top-0 left-0 p-2 w-full bg-gradient-to-b from-neutral-800/90 to-neutral-50/5"
+									on:click={(_) => (files = files.filter((e) => e != file))}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										class="w-5 h-5 fill-neutral-300 float-right hover:fill-red-500 transition-colors"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								</button>
+								<span
+									class="absolute group-hover/video:top-0 p-2 left-0 -top-full transition-all"
+								>
+									{file.name}
+								</span>
+							</div>
+						{/await}
+					{/each}
+				</div>
+
+				<button
+					type="submit"
+					class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-500 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center mt-5 mb-10"
+				>
+					{#if loading}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink"
+							style="margin: auto; background: none; display: block; shape-rendering: auto;"
+							width="25px"
+							height="25px"
+							viewBox="0 0 100 100"
+							preserveAspectRatio="xMidYMid"
+						>
+							<circle
+								class="stroke-slate-50"
+								cx="50"
+								cy="50"
+								fill="none"
+								stroke="#b0b0b0"
+								stroke-width="10"
+								r="35"
+								stroke-dasharray="164.93361431346415 56.97787143782138"
+							>
+								<animateTransform
+									attributeName="transform"
+									type="rotate"
+									repeatCount="indefinite"
+									dur="1s"
+									values="0 50 50;360 50 50"
+									keyTimes="0;1"
+								/>
+							</circle>
+						</svg>
+					{:else}
+						<span>upload</span>
+					{/if}
+				</button>
 			{/if}
 		</div>
 
-		/** look at this:
+		<!-- look at this:
 		https://stackoverflow.com/questions/32699721/javascript-extract-video-frames-reliably
-		*/
-	</div>
+		-->
+	</form>
 </div>
