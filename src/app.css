@@ -8,4 +8,28 @@
 		background-color: rgb(29 78 216 / var(--tw-bg-opacity));
 		color: aliceblue;
 	}
+
+	:root {
+		--scrollbarBG: rgba(1 1 1 /0);
+		--thumbBG: rgb(38 38 38 / 0.5);
+	}
+
+	*::-webkit-scrollbar {
+		width: 11px;
+	}
+
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+	}
+
+	*::-webkit-scrollbar-track {
+		background: var(--scrollbarBG);
+	}
+
+	*::-webkit-scrollbar-thumb {
+		background-color: var(--thumbBG);
+		border-radius: 6px;
+		border: 3px solid var(--scrollbarBG);
+	}
 }

@@ -3,9 +3,11 @@
 	import { onMount } from 'svelte';
 	import { get, writable } from 'svelte/store';
 	import { token, tokenExp, url } from '../stores';
-	import File from './File.svelte';
+	import VirtualList from '@sveltejs/svelte-virtual-list';
 
 	let fileUpload = writable<boolean>(false);
+	let newFolder = false;
+	let innerHeight: number;
 
 	onMount(() => {
 		if (!Number.isNaN(Number(get(tokenExp)))) {
@@ -99,14 +101,20 @@
 			CreatedAt: string;
 			UpdatedAt: string;
 			DeletedAt: string | null;
-			Name: string;
+			UUID: string;
 			UserID: number;
 			ParentFolderID: number;
 		}[];
 
+		console.log(jsonFiles);
+
 		result = [
 			...result,
-			...jsonFiles.map(v => ({ ...v, Type: 'File' as 'File' | 'Folder' })),
+			...jsonFiles.map(v => ({
+				...v,
+				Type: 'File' as 'File' | 'Folder',
+				Name: v.UUID,
+			})),
 		];
 
 		return result;
@@ -127,23 +135,9 @@
 			body: formData,
 		});
 	}
-
-	async function createFile() {
-		const formData = new FormData();
-
-		formData.append('name', 'test_' + Date.now());
-
-		const response = await fetch(`${url}/api/folder`, {
-			method: 'POST',
-			headers: {
-				Authorization: 'Basic ' + $token,
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-			body: formData,
-		});
-	}
 </script>
+
+<svelte:window bind:innerHeight />
 
 {#if $fileUpload}
 	{#await import('./File.svelte') then { default: File }}
@@ -151,11 +145,33 @@
 	{/await}
 {/if}
 
-<header class="w-screen flex justify-between items-center p-3">
+<header class="w-screen flex justify-between items-center p-3 px-3">
 	<h1><img src="/logo.png" alt="logo" class="w-10" /></h1>
 
 	<div class="flex gap-3 text-sm items-center">
-		<button class="flex items-center gap-2  px-3 py-1.5 rounded">
+		<button
+			class="flex items-center gap-2  px-3 py-1.5 rounded hover:bg-neutral-800/50"
+			on:click={listAll}
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 20 20"
+				fill="currentColor"
+				class="w-5 h-5"
+			>
+				<path
+					fill-rule="evenodd"
+					d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
+					clip-rule="evenodd"
+				/>
+			</svg>
+			<span>Refresh</span>
+		</button>
+
+		<button
+			class="flex items-center gap-2  px-3 py-1.5 rounded hover:bg-neutral-800/50"
+			on:click={v => (newFolder = true)}
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
@@ -168,11 +184,11 @@
 					clip-rule="evenodd"
 				/>
 			</svg>
-			<span> New folder</span>
+			<span>New folder</span>
 		</button>
 		<button
 			on:click={() => fileUpload.set(true)}
-			class="flex items-center gap-2 bg-blue-700 px-3 py-1.5 rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
+			class="flex items-center gap-2 bg-blue-700 px-3 py-1.5 mr-2 rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -187,86 +203,66 @@
 				/>
 			</svg>
 
-			<span> New file</span>
+			<span>New file</span>
 		</button>
 	</div>
 </header>
 
-<div class="overflow-x-auto  m-2">
-	<table class="min-w-full text-xs table-auto">
-		<colgroup>
-			<col />
-			<col />
-			<col />
-			<col />
-			<col class="w-36" />
-		</colgroup>
-		<thead class=" text-blue-700 font-medium border-b">
-			<tr class="text-left">
-				<th class="p-3 w-6" />
-				<th class="p-3">Filename</th>
-				<th class="p-3">Created</th>
-				<th class="p-3">Last Updated</th>
-				<th class="p-3 text-right">{''}</th>
-			</tr>
-		</thead>
-		{#await listAll()}
-			loading
-		{:then all}
-			<tbody class="">
-				<tr
-					class="border-b border-opacity-20 border-gray-300  cursor-pointer hover:bg-neutral-800/50"
+<div class="s">
+	{#await listAll()}
+		loading
+	{:then all}
+		<div class="text-sm">
+			{#if newFolder}
+				<div class="h-12 w-screen shadow-xl p-3">
+					<input
+						placeholder="New folder name"
+						type="text"
+						class="bg-transparent focus:outline-none placeholder:italic"
+						autofocus
+					/>
+				</div>
+			{/if}
+			<VirtualList
+				height={innerHeight - (newFolder ? 118 : 70) + 'px'}
+				items={all}
+				let:item
+			>
+				<div
+					class="border-b flex items-center justify-between border-opacity-10 border-gray-600  cursor-pointer hover:bg-neutral-800/50"
 				>
-					<td />
-					<td class="p-3 tracking-widest font-extrabold">../</td>
-					<td />
-					<td />
-					<td />
-				</tr>
+					<div class="flex items-center  gap-2 p-3">
+						{#if item.Type == 'File'}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								class="w-5 h-5 fill-blue-700"
+							>
+								<path
+									d="M3 3.5A1.5 1.5 0 014.5 2h6.879a1.5 1.5 0 011.06.44l4.122 4.12A1.5 1.5 0 0117 7.622V16.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 16.5v-13z"
+								/>
+							</svg>
+						{:else}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								class="w-5 h-5 fill-blue-700"
+							>
+								<path
+									d="M3.75 3A1.75 1.75 0 002 4.75v3.26a3.235 3.235 0 011.75-.51h12.5c.644 0 1.245.188 1.75.51V6.75A1.75 1.75 0 0016.25 5h-4.836a.25.25 0 01-.177-.073L9.823 3.513A1.75 1.75 0 008.586 3H3.75zM3.75 9A1.75 1.75 0 002 10.75v4.5c0 .966.784 1.75 1.75 1.75h12.5A1.75 1.75 0 0018 15.25v-4.5A1.75 1.75 0 0016.25 9H3.75z"
+								/>
+							</svg>
+						{/if}
 
-				{#each all as item}
-					<tr
-						class="border-b border-opacity-20 border-gray-300  cursor-pointer hover:bg-neutral-800/50"
-					>
-						<td class="p-3">
-							{#if item.Type == 'File'}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-									class="w-5 h-5 fill-blue-700"
-								>
-									<path
-										d="M3 3.5A1.5 1.5 0 014.5 2h6.879a1.5 1.5 0 011.06.44l4.122 4.12A1.5 1.5 0 0117 7.622V16.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 16.5v-13z"
-									/>
-								</svg>
-							{:else}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-									class="w-5 h-5 fill-blue-700"
-								>
-									<path
-										d="M3.75 3A1.75 1.75 0 002 4.75v3.26a3.235 3.235 0 011.75-.51h12.5c.644 0 1.245.188 1.75.51V6.75A1.75 1.75 0 0016.25 5h-4.836a.25.25 0 01-.177-.073L9.823 3.513A1.75 1.75 0 008.586 3H3.75zM3.75 9A1.75 1.75 0 002 10.75v4.5c0 .966.784 1.75 1.75 1.75h12.5A1.75 1.75 0 0018 15.25v-4.5A1.75 1.75 0 0016.25 9H3.75z"
-									/>
-								</svg>
-							{/if}
-						</td>
+						<p>{item.Name}</p>
+					</div>
 
-						<td class="p-3">
-							<p>{item.Name}</p>
-						</td>
+					<div class="flex items-center justify-between w-80">
+						<span>{moment(item.CreatedAt).fromNow()}</span>
 
-						<td class="p-3">
-							<p>{moment(item.CreatedAt).fromNow()}</p>
-						</td>
-
-						<td class="p-3">
-							{moment(item.UpdatedAt).fromNow()}
-						</td>
-
-						<td class="p-2 float-right flex items-center h-max ">
+						<div class="flex w-8 justify-end items-center">
 							<span class="sm:hidden inline">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -280,9 +276,12 @@
 								</svg>
 							</span>
 
-							<span class="sm:flex hidden gap-2 items-center">
+							<span class="sm:flex hidden gap-2 items-center mr-3">
 								{#if item.Type == 'File'}
-									<span title="Preview">
+									<span
+										title="Preview"
+										class="hover:bg-neutral-800/50 p-1 rounded"
+									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 20 20"
@@ -301,7 +300,7 @@
 
 								<span
 									title="Edit {item.Type}"
-									class=" p-1 rounded flex items-center gap-1 font-semibold px-2"
+									class=" p-1 rounded flex items-center gap-1 font-semibold px-2 hover:bg-neutral-800/50"
 								>
 									<span>Edit</span>
 
@@ -322,7 +321,7 @@
 
 								<span
 									title="Delete {item.Type}"
-									class="bg-red-500 p-1 rounded flex items-center gap-1 font-semibold px-2"
+									class="bg-red-500 p-1 rounded flex items-center gap-1 font-semibold px-2 hover:bg-red-900/90"
 								>
 									<span>Delete</span>
 
@@ -340,10 +339,10 @@
 									</svg>
 								</span>
 							</span>
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		{/await}
-	</table>
+						</div>
+					</div>
+				</div>
+			</VirtualList>
+		</div>
+	{/await}
 </div>

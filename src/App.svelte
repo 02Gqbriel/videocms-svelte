@@ -28,15 +28,17 @@
 	}
 </script>
 
-<div class="text-gray-200 bg-neutral-900">
+<div style="overflow-x: overlay;" class="text-gray-200 bg-neutral-900">
 	{#await check()}
 		loading
 	{:then _}
 		<div class="min-h-screen ">
 			{#if $token !== 'undefined'}
-				{#await import('./lib/Main.svelte') then { default: Main }}
-					<svelte:component this={Main} />
-				{/await}
+				<div class="max-h-screen overflow-hidden">
+					{#await import('./lib/Main.svelte') then { default: Main }}
+						<svelte:component this={Main} />
+					{/await}
+				</div>
 			{:else}
 				{#await import('./lib/Login.svelte') then { default: Login }}
 					<svelte:component this={Login} />
