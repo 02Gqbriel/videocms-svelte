@@ -3,6 +3,7 @@
 	import { token, url } from '../stores';
 
 	export let fileUpload: Writable<boolean>;
+	export let listAll: () => void;
 
 	let droppingOf = false;
 	let files: File[];
@@ -52,6 +53,7 @@
 
 		if (succes) {
 			fileUpload.set(false);
+			listAll();
 		}
 	}
 </script>

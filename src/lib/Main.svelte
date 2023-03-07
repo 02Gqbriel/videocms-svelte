@@ -4,10 +4,22 @@
 	import { get, writable } from 'svelte/store';
 	import { token, tokenExp, url } from '../stores';
 	import VirtualList from '@sveltejs/svelte-virtual-list';
+	import toast from 'svelte-french-toast';
 
 	let fileUpload = writable<boolean>(false);
 	let newFolder = false;
 	let innerHeight: number;
+
+	let files: {
+		ID: number;
+		CreatedAt: string;
+		UpdatedAt: string;
+		DeletedAt: string | null;
+		Name: string;
+		UserID: number;
+		ParentFolderID: number;
+		Type: 'Folder' | 'File';
+	}[] = [];
 
 	onMount(() => {
 		if (!Number.isNaN(Number(get(tokenExp)))) {
@@ -53,17 +65,6 @@
 	}
 
 	async function listAll() {
-		let result: {
-			ID: number;
-			CreatedAt: string;
-			UpdatedAt: string;
-			DeletedAt: string | null;
-			Name: string;
-			UserID: number;
-			ParentFolderID: number;
-			Type: 'Folder' | 'File';
-		}[] = [];
-
 		const responseFolders = await fetch(`${url}/api/folders`, {
 			headers: {
 				Authorization: 'Basic ' + $token,
@@ -72,7 +73,7 @@
 			},
 		});
 
-		result = [
+		files = [
 			...((await responseFolders.json()).map(v => ({
 				...v,
 				Type: 'Folder',
@@ -108,16 +109,14 @@
 
 		console.log(jsonFiles);
 
-		result = [
-			...result,
+		files = [
+			...files,
 			...jsonFiles.map(v => ({
 				...v,
 				Type: 'File' as 'File' | 'Folder',
 				Name: v.UUID,
 			})),
 		];
-
-		return result;
 	}
 
 	async function createFolder() {
@@ -135,22 +134,83 @@
 			body: formData,
 		});
 	}
+
+	async function deleteFile(file: {
+		ID: number;
+		CreatedAt: string;
+		UpdatedAt: string;
+		DeletedAt: string | null;
+		Name: string;
+		UserID: number;
+		ParentFolderID: number;
+		Type: 'Folder' | 'File';
+	}) {
+		const formData = new FormData();
+
+		formData.append('LinkID', file.ID.toString());
+
+		const response = await fetch(`${url}/api/file`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: 'Basic ' + $token,
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+			body: formData,
+		});
+
+		if (response.ok) {
+			toast.success('File successfully deleted');
+			await listAll();
+		}
+	}
+
+	async function deleteFolder(file: {
+		ID: number;
+		CreatedAt: string;
+		UpdatedAt: string;
+		DeletedAt: string | null;
+		Name: string;
+		UserID: number;
+		ParentFolderID: number;
+		Type: 'Folder' | 'File';
+	}) {
+		const formData = new FormData();
+
+		formData.append('LinkID', file.ID.toString());
+
+		const response = await fetch(`${url}/api/file`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: 'Basic ' + $token,
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+			body: formData,
+		});
+
+		if (response.ok) {
+			toast.success('File successfully deleted');
+			await listAll();
+		}
+	}
 </script>
 
 <svelte:window bind:innerHeight />
 
 {#if $fileUpload}
 	{#await import('./File.svelte') then { default: File }}
-		<svelte:component this={File} {fileUpload} />
+		<svelte:component this={File} {fileUpload} {listAll} />
 	{/await}
 {/if}
 
 <header class="w-screen flex justify-between items-center p-3 px-3">
 	<h1><img src="/logo.png" alt="logo" class="w-10" /></h1>
 
-	<div class="flex gap-3 text-sm items-center">
+	<div class="flex gap-1 text-sm items-center">
 		<button
-			class="flex items-center gap-2  px-3 py-1.5 rounded hover:bg-neutral-800/50"
+			title="Refresh"
+			class="flex items-center gap-2  px-1.5 py-1.5 rounded hover:bg-neutral-800/50"
 			on:click={listAll}
 		>
 			<svg
@@ -165,7 +225,6 @@
 					clip-rule="evenodd"
 				/>
 			</svg>
-			<span>Refresh</span>
 		</button>
 
 		<button
@@ -188,7 +247,7 @@
 		</button>
 		<button
 			on:click={() => fileUpload.set(true)}
-			class="flex items-center gap-2 bg-blue-700 px-3 py-1.5 mr-2 rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
+			class="flex items-center gap-2 ml-1 bg-blue-700 px-3 py-1.5 mr-2 rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -210,8 +269,10 @@
 
 <div class="s">
 	{#await listAll()}
-		loading
-	{:then all}
+		<div>
+			<div>l</div>
+		</div>
+	{:then _}
 		<div class="text-sm">
 			{#if newFolder}
 				<div class="h-12 w-screen shadow-xl p-3">
@@ -225,7 +286,7 @@
 			{/if}
 			<VirtualList
 				height={innerHeight - (newFolder ? 118 : 70) + 'px'}
-				items={all}
+				items={files}
 				let:item
 			>
 				<div
@@ -259,8 +320,14 @@
 						<p>{item.Name}</p>
 					</div>
 
-					<div class="flex items-center justify-between w-80">
-						<span>{moment(item.CreatedAt).fromNow()}</span>
+					<div class="flex items-center justify-between w-96">
+						<span
+							title="This {item.Type.toLowerCase()} was created {moment(
+								item.CreatedAt
+							).fromNow()}"
+						>
+							{moment(item.CreatedAt).fromNow()}
+						</span>
 
 						<div class="flex w-8 justify-end items-center">
 							<span class="sm:hidden inline">
@@ -319,7 +386,8 @@
 									</svg>
 								</span>
 
-								<span
+								<button
+									on:click={() => deleteFile(item)}
 									title="Delete {item.Type}"
 									class="bg-red-500 p-1 rounded flex items-center gap-1 font-semibold px-2 hover:bg-red-900/90"
 								>
@@ -337,7 +405,7 @@
 											clip-rule="evenodd"
 										/>
 									</svg>
-								</span>
+								</button>
 							</span>
 						</div>
 					</div>

@@ -47,7 +47,8 @@
 	<h1 class="text-5xl  font-bold mb-5">Login</h1>
 
 	<fieldset class="">
-		<label for="username" class="block mb-2 text-sm font-medium">Username</label>
+		<label for="username" class="block mb-2 text-sm font-medium">Username</label
+		>
 		<input
 			type="text"
 			id="username"
@@ -60,7 +61,9 @@
 	</fieldset>
 
 	<fieldset class="">
-		<label for="password" class="block mb-2 text-sm font-medium ">Password</label>
+		<label for="password" class="block mb-2 text-sm font-medium "
+			>Password</label
+		>
 		<input
 			type="password"
 			id="password"
@@ -73,6 +76,7 @@
 	</fieldset>
 
 	<button
+		disabled={loading}
 		type="submit"
 		class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-500 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center mt-5 mb-10"
 	>

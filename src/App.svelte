@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { token, tokenExp, url } from './stores';
+	import { Toaster } from 'svelte-french-toast';
 
 	async function check() {
 		if ($token == 'undefined') return;
@@ -27,6 +28,13 @@
 		token.set('undefined');
 	}
 </script>
+
+<Toaster
+	toastOptions={{
+		style: 'background-color: rgb(38 38 38 / 0.95); color: rgb(229 231 235);',
+	}}
+	position={'top-right'}
+/>
 
 <div style="overflow-x: overlay;" class="text-gray-200 bg-neutral-900">
 	{#await check()}
