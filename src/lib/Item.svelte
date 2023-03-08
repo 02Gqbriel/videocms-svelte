@@ -1,12 +1,26 @@
 <script lang="ts">
-	import moment from 'moment';
-	import { deleteFile } from '../util/files';
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
 
-	export let item;
+	import { deleteFile, deleteFolder } from '../util/files';
+	import type { Item } from '../util/files';
+	import { doubletap } from '../util/doubletap';
+	import { enterFolder } from '../util/folderTraversing';
+
+	export let item: Item;
+
+	dayjs.extend(relativeTime);
+
+	function handleDoubleClick(e: CustomEvent) {
+		enterFolder(item.ID);
+	}
 </script>
 
 <div
-	class="border-b flex items-center justify-between border-opacity-10 border-gray-600  cursor-pointer hover:bg-neutral-800/50"
+	on:doubletap={handleDoubleClick}
+	use:doubletap
+	class="border-b flex items-center justify-between border-opacity-10
+	border-gray-600 cursor-pointer hover:bg-neutral-800/50"
 >
 	<div class="flex items-center  gap-2 p-3">
 		{#if item.Type == 'File'}
@@ -38,11 +52,11 @@
 
 	<div class="flex items-center justify-between w-96">
 		<span
-			title="This {item.Type.toLowerCase()} was created {moment(
+			title="This {item.Type.toLowerCase()} was created {dayjs(
 				item.CreatedAt
 			).fromNow()}"
 		>
-			{moment(item.CreatedAt).fromNow()}
+			{dayjs(item.CreatedAt).fromNow()}
 		</span>
 
 		<div class="flex w-8 justify-end items-center">
@@ -100,9 +114,10 @@
 				</span>
 
 				<button
-					on:click={() => deleteFile(item.ID)}
+					on:click={() =>
+						item.Type == 'File' ? deleteFile(item.ID) : deleteFolder(item.ID)}
 					title="Delete {item.Type}"
-					class="bg-red-500 p-1 rounded flex items-center gap-1 font-semibold px-2 hover:bg-red-900/90"
+					class="bg-red-500 p-1 rounded flex items-center gap-1 font-semibold px-2 mr-2 hover:bg-red-900/90"
 				>
 					<span>Delete</span>
 

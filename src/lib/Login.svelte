@@ -1,38 +1,16 @@
 <script lang="ts">
-	import { token, url, tokenExp } from '../stores';
-	import moment from 'moment';
+	import { login } from '../util/auth';
 
 	let loading: boolean = false;
 
 	let username: string;
 	let password: string;
 
-	async function login(e: SubmitEvent) {
+	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		loading = true;
 
-		const formData = new FormData();
-
-		formData.append('username', username);
-		formData.append('password', password);
-
-		const response = await fetch(`${url}/api/auth/login`, {
-			method: 'POST',
-			body: formData,
-		});
-
-		if (response.ok) {
-			const { exp, token: tokenNew } = (await response.json()) as {
-				exp: string;
-				token: string;
-			};
-
-			token.set(tokenNew);
-
-			tokenExp.set(Date.parse(exp).toString());
-
-			return;
-		}
+		await login(username, password);
 
 		loading = false;
 	}
@@ -42,7 +20,7 @@
 	class="max-w-screen-sm mx-auto flex justify-center flex-col h-screen p-16 gap-5"
 	method="POST"
 	autocomplete="new-password"
-	on:submit={login}
+	on:submit={handleSubmit}
 >
 	<h1 class="text-5xl  font-bold mb-5">Login</h1>
 

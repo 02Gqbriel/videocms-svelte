@@ -1,32 +1,6 @@
 <script lang="ts">
-	import { token, tokenExp, url } from './stores';
 	import { Toaster } from 'svelte-french-toast';
-
-	async function check() {
-		if ($token == 'undefined') return;
-
-		const response = await fetch(`${url}/api/auth/check`, {
-			headers: {
-				Authorization: 'Basic ' + $token,
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-		});
-
-		if (response.ok) {
-			const json = (await response.json()) as { exp: string; username: string };
-
-			const { exp, username } = json;
-
-			const date = Date.parse(exp);
-
-			tokenExp.set(date.toString());
-
-			return;
-		}
-
-		token.set('undefined');
-	}
+	import { checkAuth, token } from './util/auth';
 </script>
 
 <Toaster
@@ -39,7 +13,7 @@
 />
 
 <div style="overflow-x: overlay;" class="text-gray-200 bg-neutral-900">
-	{#await check()}
+	{#await checkAuth()}
 		loading
 	{:then _}
 		<div class="min-h-screen ">

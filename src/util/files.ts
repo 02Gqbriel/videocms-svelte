@@ -1,6 +1,8 @@
 import toast from 'svelte-french-toast';
 import { get, writable } from 'svelte/store';
-import { url, token } from '../stores';
+import { url } from '../stores';
+import { token } from './auth';
+import { currentFolderID } from './folderTraversing';
 
 export interface Item {
 	ID: number;
@@ -21,13 +23,16 @@ export async function refreshItems() {
 }
 
 export async function listFolders(): Promise<Item[]> {
-	const res = await fetch(`${url}/api/folders`, {
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-	});
+	const res = await fetch(
+		`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`,
+		{
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+		}
+	);
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
@@ -60,8 +65,10 @@ export async function createFolder(name: string, parentFolderID: number) {
 	if (res.ok) {
 		await refreshItems();
 
-		toast.success(`Folder ${name} has been created succesfully`);
+		toast.success(`Folder ${name} has been created successfully`);
 	}
+
+	return res.ok;
 }
 
 export async function updateFolder(
@@ -88,7 +95,7 @@ export async function updateFolder(
 	if (res.ok) {
 		await refreshItems();
 
-		toast.success(`Renamed folder to ${name} succesfully`);
+		toast.success(`Renamed folder to ${name} successfully`);
 	}
 }
 
@@ -115,13 +122,16 @@ export async function deleteFolder(fileID: number) {
 }
 
 export async function listFiles(): Promise<Item[]> {
-	const res = await fetch(`${url}/api/files`, {
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-	});
+	const res = await fetch(
+		`${url}/api/files?ParentFolderID=${get(currentFolderID)}`,
+		{
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+		}
+	);
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
@@ -162,6 +172,7 @@ export async function uploadFile(file: File): Promise<boolean> {
 
 	formData.append('Name', file.name);
 	formData.append('file', file);
+	formData.append('ParentFolderID', get(currentFolderID).toString());
 
 	const response = await fetch(`${url}/api/file`, {
 		method: 'POST',
@@ -179,7 +190,7 @@ export async function uploadFile(file: File): Promise<boolean> {
 		toast.success(
 			`File ${
 				file.name.length > 17 ? file.name.substring(0, 17) + '...' : file.name
-			} has been uploaded succesfully`
+			} has been uploaded successfully`
 		);
 	}
 

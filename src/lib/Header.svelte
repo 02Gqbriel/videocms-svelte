@@ -1,13 +1,39 @@
 <script lang="ts">
 	import type { Writable } from 'svelte/store';
 	import { refreshItems } from '../util/files';
+	//@ts-ignore
+	import image from '../assets/logo.png?w=30;40;100&quality=100&format=webp;jpg&picture';
+	const sources = Object.entries(image.sources) satisfies [
+		string,
+		{ src: string; w: number }[]
+	][];
 
-	export let newFolder: boolean;
+	export let setNewFolder: (v: boolean) => boolean;
 	export let fileUpload: Writable<boolean>;
 </script>
 
 <header class="w-screen flex justify-between items-center p-3 px-3">
-	<h1><img src="/logo.png" alt="logo" class="w-10" /></h1>
+	<h1 class="w-10">
+		<picture role="img" aria-label="Backgroundimage for Landingpage">
+			{#each sources as [format, images]}
+				<source
+					width={50}
+					height={50}
+					srcset={images.map(i => i.src + ' ' + i.w + 'w').join(', ')}
+					type="image/{format}"
+				/>
+			{/each}
+
+			<img
+				src={image.fallback.src}
+				width={50}
+				height={50}
+				alt=""
+				loading="eager"
+				decoding="async"
+			/>
+		</picture>
+	</h1>
 
 	<div class="flex gap-1 text-sm items-center">
 		<button
@@ -31,7 +57,7 @@
 
 		<button
 			class="flex items-center gap-2  px-3 py-1.5 rounded hover:bg-neutral-800/50"
-			on:click={v => (newFolder = true)}
+			on:click={v => setNewFolder(true)}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
