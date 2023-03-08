@@ -9,5 +9,6 @@ export default defineConfig({
 		svelte({}),
 		imagetools({}),
 		viteCompression({ algorithm: 'brotliCompress' }),
+		viteCompression({ algorithm: 'gzip' }),
 	],
 });
