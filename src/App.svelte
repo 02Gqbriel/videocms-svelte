@@ -31,9 +31,11 @@
 
 <Toaster
 	toastOptions={{
-		style: 'background-color: rgb(38 38 38 / 0.95); color: rgb(229 231 235);',
+		style:
+			'background-color: rgb(38 38 38 / 0.95); color: rgb(229 231 235); width: fit-content;',
 	}}
 	position={'top-right'}
+	gutter={5}
 />
 
 <div style="overflow-x: overlay;" class="text-gray-200 bg-neutral-900">

@@ -1,15 +1,11 @@
 <script lang="ts">
 	import type { Writable } from 'svelte/store';
-	import { token, url } from '../stores';
+	import { refreshItems, uploadFile } from '../util/files';
 
 	export let fileUpload: Writable<boolean>;
-	export let listAll: () => void;
 
-	let droppingOf = false;
 	let files: File[];
 	let loading: boolean = false;
-
-	$: console.log(files);
 
 	function getBase64(vid) {
 		const reader = new FileReader();
@@ -29,32 +25,21 @@
 		let succes = true;
 
 		for (const file of files) {
-			const formData = new FormData();
-
-			formData.append('Name', file.name);
-			formData.append('file', file);
-
-			const response = await fetch(`${url}/api/file`, {
-				method: 'POST',
-				body: formData,
-				headers: {
-					Authorization: 'Basic ' + $token,
-					'Access-Control-Allow-Headers': 'Authorization',
-					'Access-Control-Allow-Credentials': 'true',
-				},
-			});
-
-			succes = response.ok && succes;
-
-			console.log(response);
+			succes = succes && (await uploadFile(file));
 		}
 
 		loading = false;
 
 		if (succes) {
 			fileUpload.set(false);
-			listAll();
+			await refreshItems();
 		}
+	}
+
+	function handleInput(
+		e: Event & { currentTarget: EventTarget & HTMLInputElement }
+	) {
+		files = [...e.currentTarget.files];
 	}
 </script>
 
@@ -69,7 +54,7 @@
 			title=""
 			type="file"
 			accept="video/mp4"
-			on:input={e => (files = [...e.target.files])}
+			on:input={handleInput}
 			multiple
 			class="absolute left-0 top-0 h-full w-full max-h-[370px] appearance-none opacity-0 cursor-pointer"
 		/>

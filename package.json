@@ -23,7 +23,6 @@
 		"vite": "^4.1.0"
 	},
 	"dependencies": {
-		"@sveltejs/svelte-virtual-list": "^3.0.1",
 		"moment": "^2.29.4",
 		"svelte-french-toast": "^1.0.3"
 	}
