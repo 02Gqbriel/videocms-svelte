@@ -2,12 +2,26 @@
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 
-	import { deleteFile, deleteFolder } from '../util/files';
+	import { deleteFile, deleteFolder, updateFolder } from '../util/files';
 	import type { Item } from '../util/files';
 	import { doubletap } from '../util/doubletap';
 	import { enterFolder } from '../util/folderTraversing';
+	import { url } from '../stores';
 
 	export let item: Item;
+
+	let rename = false;
+	let ref: HTMLInputElement;
+
+	async function handleRename(e: SubmitEvent) {
+		e.preventDefault();
+
+		const success = await updateFolder(item.ID, item.ParentFolderID, ref.value);
+
+		if (success) {
+			rename = false;
+		}
+	}
 
 	dayjs.extend(relativeTime);
 
@@ -19,7 +33,7 @@
 <div
 	on:doubletap={handleDoubleClick}
 	use:doubletap
-	class="border-b flex items-center justify-between border-opacity-10
+	class="border-b group/item flex items-center justify-between border-opacity-10
 	border-gray-600 cursor-pointer hover:bg-neutral-800/50"
 >
 	<div class="flex items-center  gap-2 p-3">
@@ -47,14 +61,46 @@
 			</svg>
 		{/if}
 
-		<p>{item.Name}</p>
+		<form on:submit={handleRename} class="flex relative items-center gap-2">
+			<input
+				readonly={!rename}
+				value={item.Name}
+				bind:this={ref}
+				on:input={() => (ref.style.width = ref.value.length + 'ch')}
+				style="width: {item.Name.length + 'ch'};"
+				class="bg-neutral-900 group-hover/item:bg-neutral-800/0 z-10 active:outline-none focus:outline-none {rename
+					? ''
+					: 'pointer-events-none'}"
+			/>
+
+			{#if item.Type == 'Folder'}
+				<button
+					type="button"
+					on:click={() => {
+						rename = true;
+						ref.focus();
+					}}
+					title="Rename {item.Type}"
+					class="absolute right-0 group-hover/item:-right-5 transition-all p-1"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 20 20"
+						fill="currentColor"
+						class="w-4 h-4 l"
+					>
+						<path
+							d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"
+						/>
+					</svg>
+				</button>
+			{/if}
+		</form>
 	</div>
 
 	<div class="flex items-center justify-between w-96">
 		<span
-			title="This {item.Type.toLowerCase()} was created {dayjs(
-				item.CreatedAt
-			).fromNow()}"
+			title="This {item.Type.toLowerCase()} was created {dayjs(item.CreatedAt).fromNow()}"
 		>
 			{dayjs(item.CreatedAt).fromNow()}
 		</span>
@@ -73,9 +119,15 @@
 				</svg>
 			</span>
 
-			<span class="sm:flex hidden gap-2 items-center mr-3">
+			<span class="sm:flex hidden gap-3 items-center mr-3">
 				{#if item.Type == 'File'}
-					<span title="Preview" class="hover:bg-neutral-800/50 p-1 rounded">
+					<a
+						target="_blank"
+						rel="noreferrer"
+						href="{url}/{item.UUID}"
+						title="Preview"
+						class="hover:bg-neutral-800 p-1 rounded"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
@@ -89,29 +141,8 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-					</span>
+					</a>
 				{/if}
-
-				<span
-					title="Edit {item.Type}"
-					class=" p-1 rounded flex items-center gap-1 font-semibold px-2 hover:bg-neutral-800/50"
-				>
-					<span>Edit</span>
-
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 20 20"
-						fill="currentColor"
-						class="w-5 h-5"
-					>
-						<path
-							d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z"
-						/>
-						<path
-							d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z"
-						/>
-					</svg>
-				</span>
 
 				<button
 					on:click={() =>

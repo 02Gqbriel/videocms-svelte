@@ -3,6 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import viteCompression from 'vite-plugin-compression';
 import { imagetools } from 'vite-imagetools';
 import { chunkSplitPlugin } from 'vite-plugin-chunk-split';
+import { comlink } from 'vite-plugin-comlink';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,4 +14,8 @@ export default defineConfig({
 		viteCompression({ algorithm: 'brotliCompress' }),
 		viteCompression({ algorithm: 'gzip' }),
 	],
+
+	worker: {
+		plugins: [comlink()],
+	},
 });

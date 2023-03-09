@@ -23,21 +23,18 @@ export async function refreshItems() {
 }
 
 export async function listFolders(): Promise<Item[]> {
-	const res = await fetch(
-		`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`,
-		{
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-		}
-	);
+	const res = await fetch(`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`, {
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+	});
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map(v => ({
+		const items = json.map((v) => ({
 			...v,
 			Type: 'Folder' as 'Folder' | 'File',
 		}));
@@ -97,6 +94,8 @@ export async function updateFolder(
 
 		toast.success(`Renamed folder to ${name} successfully`);
 	}
+
+	return res.ok;
 }
 
 export async function deleteFolder(fileID: number) {
@@ -122,21 +121,18 @@ export async function deleteFolder(fileID: number) {
 }
 
 export async function listFiles(): Promise<Item[]> {
-	const res = await fetch(
-		`${url}/api/files?ParentFolderID=${get(currentFolderID)}`,
-		{
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-		}
-	);
+	const res = await fetch(`${url}/api/files?ParentFolderID=${get(currentFolderID)}`, {
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+	});
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map(v => ({
+		const items = json.map((v) => ({
 			...v,
 			Type: 'File' as 'Folder' | 'File',
 		}));

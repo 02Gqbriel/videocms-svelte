@@ -19,7 +19,7 @@
 				<source
 					width={50}
 					height={50}
-					srcset={images.map(i => i.src + ' ' + i.w + 'w').join(', ')}
+					srcset={images.map((i) => i.src + ' ' + i.w + 'w').join(', ')}
 					type="image/{format}"
 				/>
 			{/each}
@@ -57,7 +57,7 @@
 
 		<button
 			class="flex items-center gap-2  px-3 py-1.5 rounded hover:bg-neutral-800/50"
-			on:click={v => setNewFolder(true)}
+			on:click={(v) => setNewFolder(true)}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

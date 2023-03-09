@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { url } from '../stores';
 	import { login } from '../util/auth';
 
 	let loading: boolean = false;
@@ -25,8 +26,7 @@
 	<h1 class="text-5xl  font-bold mb-5">Login</h1>
 
 	<fieldset class="">
-		<label for="username" class="block mb-2 text-sm font-medium">Username</label
-		>
+		<label for="username" class="block mb-2 text-sm font-medium">Username</label>
 		<input
 			type="text"
 			id="username"
@@ -39,9 +39,7 @@
 	</fieldset>
 
 	<fieldset class="">
-		<label for="password" class="block mb-2 text-sm font-medium "
-			>Password</label
-		>
+		<label for="password" class="block mb-2 text-sm font-medium ">Password</label>
 		<input
 			type="password"
 			id="password"
@@ -93,3 +91,38 @@
 		{/if}
 	</button>
 </form>
+
+<div
+	class="fixed bottom-0 left-[50%] w-full justify-evenly -translate-x-[50%] text-sm text-neutral-500 max-w-screen-sm gap-2 flex px-16 py-1 items-center"
+>
+	<a
+		href="{url}/3b5202e3-935b-4ea5-add1-480a5b6296d4"
+		target="_blank"
+		class="hover:underline"
+		rel="noreferrer"
+	>
+		Video Player Example
+	</a>
+
+	<span class="font-bold text-lg">·</span>
+
+	<a
+		href="https://documenter.getpostman.com/view/15650779/2s93CPrY2w"
+		target="_blank"
+		rel="noreferrer"
+		class="hover:underline"
+	>
+		Api Documentation
+	</a>
+
+	<span class="font-bold text-lg">·</span>
+
+	<a
+		href="https://hub.docker.com/r/kirari04/videocms"
+		target="_blank"
+		rel="noreferrer"
+		class="hover:underline"
+	>
+		Docker Image
+	</a>
+</div>

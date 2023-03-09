@@ -1,21 +1,17 @@
-<script lang="ts">
+<script lang="ts" async="true">
 	import type { Writable } from 'svelte/store';
 	import { refreshItems, uploadFile } from '../util/files';
+
+	import { instance } from '../util/filePreview';
 
 	export let fileUpload: Writable<boolean>;
 
 	let files: File[];
 	let loading: boolean = false;
 
-	function getBase64(vid) {
-		const reader = new FileReader();
-		reader.readAsDataURL(vid);
-
-		return new Promise<string>((resolve, reject) => {
-			reader.onload = e => {
-				resolve(reader.result as string);
-			};
-		});
+	async function getPreview(file: File): Promise<string> {
+		const localInstance = await new instance();
+		return await localInstance.previewVid(file);
 	}
 
 	async function uploadFiles(e: SubmitEvent) {
@@ -36,9 +32,7 @@
 		}
 	}
 
-	function handleInput(
-		e: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) {
+	function handleInput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		files = [...e.currentTarget.files];
 	}
 </script>
@@ -58,10 +52,7 @@
 			multiple
 			class="absolute left-0 top-0 h-full w-full max-h-[370px] appearance-none opacity-0 cursor-pointer"
 		/>
-		<button
-			class="absolute top-0 right-0 m-5"
-			on:click={_ => fileUpload.set(false)}
-		>
+		<button class="absolute top-0 right-0 m-5" on:click={(_) => fileUpload.set(false)}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
@@ -74,7 +65,7 @@
 			</svg>
 		</button>
 		<div
-			on:drop={e => console.log(e)}
+			on:drop={(e) => console.log(e)}
 			class="border-2 border-dashed border-neutral-500 rounded-md h-full p-10 flex flex-col justify-center items-center gap-3"
 		>
 			<span>
@@ -115,33 +106,28 @@
 			</button>
 
 			{#if files != undefined}
-				<span
-					class="w-full h-[0.5px] border border-separate border-neutral-800 px-5"
-				/>
+				<span class="w-full h-[0.5px] border border-separate border-neutral-800 px-5" />
 
-				<div class="flex gap-x-2 flex-wrap justify-around">
+				<div class="flex gap-x-2 flex-wrap justify-between max-h-96 overflow-scroll">
 					{#each files as file}
-						{#await getBase64(file)}
+						{#await getPreview(file)}
 							<div
-								class="w-[45%] aspect-video animate-pulse bg-neutral-700 my-3 rounded flex items-start"
+								class="w-[49%] aspect-video animate-pulse bg-neutral-700 my-2 rounded flex items-start"
 							>
 								<span class="p-2">{file.name}</span>
 							</div>
 						{:then result}
 							<div
-								class="relative group/video w-[45%] cursor-pointer aspect-video overflow-hidden my-3 rounded-lg"
+								class="relative group/video w-[49%] cursor-pointer aspect-video overflow-hidden my-2 rounded-lg"
 							>
 								<video class="aspect-video object-cover ">
-									<source
-										src={result}
-										type={result.split(';')[0].replace('data:', '')}
-									/>
+									<source src={result} type={result.split(';')[0].replace('data:', '')} />
 									<track kind="captions" />
 									Your browser does not support the video tag.
 								</video>
 								<button
 									class="absolute top-0 left-0 p-2 w-full bg-gradient-to-b from-neutral-800/90 to-neutral-50/5"
-									on:click={_ => (files = files.filter(e => e != file))}
+									on:click={(_) => (files = files.filter((e) => e != file))}
 								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"

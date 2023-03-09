@@ -3,7 +3,9 @@ lockfileVersion: 5.4
 specifiers:
   '@sveltejs/vite-plugin-svelte': ^2.0.2
   '@tsconfig/svelte': ^3.0.0
+  '@types/node': ^18.14.6
   autoprefixer: ^10.4.13
+  comlink: ^4.4.1
   dayjs: ^1.11.7
   npm-run-all: ^4.1.5
   postcss: ^8.4.21
@@ -17,17 +19,22 @@ specifiers:
   vite: ^4.1.0
   vite-imagetools: ^4.0.18
   vite-plugin-chunk-split: ^0.4.7
+  vite-plugin-comlink: ^3.0.5
   vite-plugin-compression: ^0.5.1
+  zod: ^3.21.4
 
 dependencies:
+  comlink: 4.4.1
   dayjs: 1.11.7
   svelte-french-toast: 1.0.3_svelte@3.55.1
   svelte-gestures: 1.4.1
   vite-imagetools: 4.0.18
+  zod: 3.21.4
 
 devDependencies:
   '@sveltejs/vite-plugin-svelte': 2.0.3_svelte@3.55.1+vite@4.1.4
   '@tsconfig/svelte': 3.0.0
+  '@types/node': 18.14.6
   autoprefixer: 10.4.13_postcss@8.4.21
   npm-run-all: 4.1.5
   postcss: 8.4.21
@@ -36,8 +43,9 @@ devDependencies:
   tailwindcss: 3.2.7_postcss@8.4.21
   tslib: 2.5.0
   typescript: 4.9.5
-  vite: 4.1.4
+  vite: 4.1.4_@types+node@18.14.6
   vite-plugin-chunk-split: 0.4.7_vite@4.1.4
+  vite-plugin-comlink: 3.0.5_comlink@4.4.1+vite@4.1.4
   vite-plugin-compression: 0.5.1_vite@4.1.4
 
 packages:
@@ -304,7 +312,7 @@ packages:
       magic-string: 0.29.0
       svelte: 3.55.1
       svelte-hmr: 0.15.1_svelte@3.55.1
-      vite: 4.1.4
+      vite: 4.1.4_@types+node@18.14.6
       vitefu: 0.2.4_vite@4.1.4
     transitivePeerDependencies:
       - supports-color
@@ -317,6 +325,10 @@ packages:
   /@types/estree/1.0.0:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
     dev: false
+
+  /@types/node/18.14.6:
+    resolution: {integrity: sha512-93+VvleD3mXwlLI/xASjw0FzKcwzl3OdTCzm1LaRfqgS21gfFtK3zDXM5Op9TeeMsJVOaJ2VRDpT9q4Y3d0AvA==}
+    dev: true
 
   /@types/pug/2.0.6:
     resolution: {integrity: sha512-SnHmG9wN1UVmagJOnyo/qkk0Z7gejYxOYYmaAwr5u2yFYfsupN3sg10kyzN8Hep/2zbHxCnsumxOoRIRMBwKCg==}
@@ -542,6 +554,9 @@ packages:
       color-convert: 2.0.1
       color-string: 1.9.1
     dev: false
+
+  /comlink/4.4.1:
+    resolution: {integrity: sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==}
 
   /concat-map/0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -1135,6 +1150,12 @@ packages:
 
   /json-parse-better-errors/1.0.2:
     resolution: {integrity: sha512-mrqyZKfX5EhL7hvqcV6WG1yYjnjeuYDzDhhcAAUrq8Po85NBQBJP+ZDUT75qZQ98IkUoBqdkExkukOU7Ts2wrw==}
+    dev: true
+
+  /json5/2.2.1:
+    resolution: {integrity: sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==}
+    engines: {node: '>=6'}
+    hasBin: true
     dev: true
 
   /jsonfile/6.1.0:
@@ -2064,7 +2085,19 @@ packages:
     dependencies:
       es-module-lexer: 1.2.0
       magic-string: 0.26.7
-      vite: 4.1.4
+      vite: 4.1.4_@types+node@18.14.6
+    dev: true
+
+  /vite-plugin-comlink/3.0.5_comlink@4.4.1+vite@4.1.4:
+    resolution: {integrity: sha512-my8BE9GFJEaLc7l3e2SfRUL8JJsN9On8PiW7q4Eyq3g6DHUsNqo5WlS7Butuzc8ngrs24Tf1RC8Xfdda+E5T9w==}
+    peerDependencies:
+      comlink: ^4.3.1
+      vite: '>=2.9.6'
+    dependencies:
+      comlink: 4.4.1
+      json5: 2.2.1
+      magic-string: 0.26.7
+      vite: 4.1.4_@types+node@18.14.6
     dev: true
 
   /vite-plugin-compression/0.5.1_vite@4.1.4:
@@ -2075,12 +2108,12 @@ packages:
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 10.1.0
-      vite: 4.1.4
+      vite: 4.1.4_@types+node@18.14.6
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /vite/4.1.4:
+  /vite/4.1.4_@types+node@18.14.6:
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -2105,6 +2138,7 @@ packages:
       terser:
         optional: true
     dependencies:
+      '@types/node': 18.14.6
       esbuild: 0.16.17
       postcss: 8.4.21
       resolve: 1.22.1
@@ -2121,7 +2155,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.1.4
+      vite: 4.1.4_@types+node@18.14.6
     dev: true
 
   /which-boxed-primitive/1.0.2:
@@ -2169,3 +2203,7 @@ packages:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
     dev: true
+
+  /zod/3.21.4:
+    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+    dev: false
