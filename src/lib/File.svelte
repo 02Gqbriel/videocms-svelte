@@ -2,16 +2,59 @@
 	import type { Writable } from 'svelte/store';
 	import { refreshItems, uploadFile } from '../util/files';
 
-	import { instance } from '../util/filePreview';
-
 	export let fileUpload: Writable<boolean>;
 
 	let files: File[];
 	let loading: boolean = false;
 
 	async function getPreview(file: File): Promise<string> {
-		const localInstance = await new instance();
-		return await localInstance.previewVid(file);
+		return new Promise((resolve, reject) => {
+			const fr = new FileReader();
+			fr.onload = () => {
+				resolve(fr.result as string);
+			};
+			fr.onerror = reject;
+			fr.readAsDataURL(file);
+		});
+	}
+
+	async function extractFramesFromVideo(file: File, fps = 1) {
+		return new Promise<string>(async resolve => {
+			// fully download it first (no buffering):
+
+			let videoObjectUrl = URL.createObjectURL(file);
+			let video = document.createElement('video');
+
+			let seekResolve;
+			video.addEventListener('seeked', async function () {
+				if (seekResolve) seekResolve();
+			});
+
+			video.src = videoObjectUrl;
+
+			// workaround chromium metadata bug (https://stackoverflow.com/q/38062864/993683)
+			while (
+				(video.duration === Infinity || isNaN(video.duration)) &&
+				video.readyState < 2
+			) {
+				await new Promise(r => setTimeout(r, 1000));
+				video.currentTime = 10000000 * Math.random();
+			}
+
+			let canvas = document.createElement('canvas');
+			let context = canvas.getContext('2d');
+			let [w, h] = [video.videoWidth, video.videoHeight];
+			canvas.width = w;
+			canvas.height = h;
+
+			video.currentTime = 0;
+			await new Promise(r => (seekResolve = r));
+
+			context.drawImage(video, 0, 0, w, h);
+			let base64ImageData = canvas.toDataURL('image/jpg', 0.1);
+
+			resolve(base64ImageData);
+		});
 	}
 
 	async function uploadFiles(e: SubmitEvent) {
@@ -32,8 +75,14 @@
 		}
 	}
 
-	function handleInput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+	function handleInput(
+		e: Event & { currentTarget: EventTarget & HTMLInputElement }
+	) {
 		files = [...e.currentTarget.files];
+	}
+
+	function getBase64(file: File): string | PromiseLike<string> {
+		throw new Error('Function not implemented.');
 	}
 </script>
 
@@ -52,7 +101,10 @@
 			multiple
 			class="absolute left-0 top-0 h-full w-full max-h-[370px] appearance-none opacity-0 cursor-pointer"
 		/>
-		<button class="absolute top-0 right-0 m-5" on:click={(_) => fileUpload.set(false)}>
+		<button
+			class="absolute top-0 right-0 m-5"
+			on:click={_ => fileUpload.set(false)}
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
@@ -65,7 +117,6 @@
 			</svg>
 		</button>
 		<div
-			on:drop={(e) => console.log(e)}
 			class="border-2 border-dashed border-neutral-500 rounded-md h-full p-10 flex flex-col justify-center items-center gap-3"
 		>
 			<span>
@@ -106,28 +157,35 @@
 			</button>
 
 			{#if files != undefined}
-				<span class="w-full h-[0.5px] border border-separate border-neutral-800 px-5" />
+				<span
+					class="w-full h-[0.5px] border border-separate border-neutral-800 px-5"
+				/>
 
-				<div class="flex gap-x-2 flex-wrap justify-between max-h-96 overflow-scroll">
-					{#each files as file}
-						{#await getPreview(file)}
-							<div
-								class="w-[49%] aspect-video animate-pulse bg-neutral-700 my-2 rounded flex items-start"
-							>
-								<span class="p-2">{file.name}</span>
-							</div>
-						{:then result}
-							<div
-								class="relative group/video w-[49%] cursor-pointer aspect-video overflow-hidden my-2 rounded-lg"
-							>
-								<video class="aspect-video object-cover ">
-									<source src={result} type={result.split(';')[0].replace('data:', '')} />
-									<track kind="captions" />
-									Your browser does not support the video tag.
-								</video>
+				<div
+					id="image_container"
+					class="flex gap-x-2 flex-wrap justify-between max-h-96 overflow-scroll"
+				>
+					{#each files as file (file.name)}
+						<div
+							class="relative group/video w-[49%] cursor-pointer aspect-video overflow-hidden my-2 rounded-lg"
+						>
+							{#await extractFramesFromVideo(file)}
+								<div
+									class="w-full h-full animate-pulse bg-neutral-700 my-2 rounded flex items-start"
+								>
+									<span class="p-2">{file.name}</span>
+								</div>
+							{:then result}
+								<img
+									class="aspect-video"
+									src={result}
+									alt=""
+									decoding="async"
+									loading="lazy"
+								/>
 								<button
 									class="absolute top-0 left-0 p-2 w-full bg-gradient-to-b from-neutral-800/90 to-neutral-50/5"
-									on:click={(_) => (files = files.filter((e) => e != file))}
+									on:click={_ => (files = files.filter(e => e != file))}
 								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
@@ -147,8 +205,8 @@
 								>
 									{file.name}
 								</span>
-							</div>
-						{/await}
+							{/await}
+						</div>
 					{/each}
 				</div>
 
@@ -198,3 +256,14 @@
 		-->
 	</form>
 </div>
+
+<style>
+	#image_container::-webkit-scrollbar {
+		display: none;
+	}
+
+	#image_container {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+</style>

@@ -143,7 +143,7 @@
 		style="padding-top: {top}px; padding-bottom: {bottom}px;"
 	>
 		{#each visible as row (row.index)}
-			<svelte-virtual-list-row animate:flip>
+			<svelte-virtual-list-row>
 				<slot item={row.data}>Missing template</slot>
 			</svelte-virtual-list-row>
 		{/each}

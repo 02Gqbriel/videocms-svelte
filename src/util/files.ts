@@ -23,18 +23,21 @@ export async function refreshItems() {
 }
 
 export async function listFolders(): Promise<Item[]> {
-	const res = await fetch(`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`, {
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-	});
+	const res = await fetch(
+		`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`,
+		{
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+		}
+	);
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map((v) => ({
+		const items = json.map(v => ({
 			...v,
 			Type: 'Folder' as 'Folder' | 'File',
 		}));
@@ -121,18 +124,21 @@ export async function deleteFolder(fileID: number) {
 }
 
 export async function listFiles(): Promise<Item[]> {
-	const res = await fetch(`${url}/api/files?ParentFolderID=${get(currentFolderID)}`, {
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-	});
+	const res = await fetch(
+		`${url}/api/files?ParentFolderID=${get(currentFolderID)}`,
+		{
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+		}
+	);
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map((v) => ({
+		const items = json.map(v => ({
 			...v,
 			Type: 'File' as 'Folder' | 'File',
 		}));
@@ -181,8 +187,6 @@ export async function uploadFile(file: File): Promise<boolean> {
 	});
 
 	if (response.ok) {
-		await refreshItems();
-
 		toast.success(
 			`File ${
 				file.name.length > 17 ? file.name.substring(0, 17) + '...' : file.name
