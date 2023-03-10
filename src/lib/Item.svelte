@@ -81,7 +81,7 @@
 						ref.focus();
 					}}
 					title="Rename {item.Type}"
-					class="absolute right-0 group-hover/item:-right-5 transition-all p-1"
+					class="absolute opacity-0 right-0 group-hover/item:-right-6 pl-2 group-hover/item:opacity-90 transition-all p-1"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +100,9 @@
 
 	<div class="flex items-center justify-between w-96">
 		<span
-			title="This {item.Type.toLowerCase()} was created {dayjs(item.CreatedAt).fromNow()}"
+			title="This {item.Type.toLowerCase()} was created {dayjs(
+				item.CreatedAt
+			).fromNow()}"
 		>
 			{dayjs(item.CreatedAt).fromNow()}
 		</span>

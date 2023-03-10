@@ -1,26 +1,18 @@
 <script lang="ts" async="true">
 	import type { Writable } from 'svelte/store';
 	import { refreshItems, uploadFile } from '../util/files';
+	import localforage from 'localforage';
 
 	export let fileUpload: Writable<boolean>;
 
 	let files: File[];
 	let loading: boolean = false;
 
-	async function getPreview(file: File): Promise<string> {
-		return new Promise((resolve, reject) => {
-			const fr = new FileReader();
-			fr.onload = () => {
-				resolve(fr.result as string);
-			};
-			fr.onerror = reject;
-			fr.readAsDataURL(file);
-		});
-	}
-
-	async function extractFramesFromVideo(file: File, fps = 1) {
+	async function extractFramesFromVideo(file: File) {
 		return new Promise<string>(async resolve => {
-			// fully download it first (no buffering):
+			const result = await localforage.getItem<string>(file.name);
+
+			if (result !== null) resolve(result);
 
 			let videoObjectUrl = URL.createObjectURL(file);
 			let video = document.createElement('video');
@@ -51,7 +43,9 @@
 			await new Promise(r => (seekResolve = r));
 
 			context.drawImage(video, 0, 0, w, h);
-			let base64ImageData = canvas.toDataURL('image/jpg', 0.1);
+			let base64ImageData = canvas.toDataURL('image/webp', 0.1);
+
+			await localforage.setItem(file.name, base64ImageData);
 
 			resolve(base64ImageData);
 		});
@@ -80,10 +74,6 @@
 	) {
 		files = [...e.currentTarget.files];
 	}
-
-	function getBase64(file: File): string | PromiseLike<string> {
-		throw new Error('Function not implemented.');
-	}
 </script>
 
 <div
@@ -96,7 +86,7 @@
 		<input
 			title=""
 			type="file"
-			accept="video/mp4"
+			accept="video/*"
 			on:input={handleInput}
 			multiple
 			class="absolute left-0 top-0 h-full w-full max-h-[370px] appearance-none opacity-0 cursor-pointer"
@@ -165,17 +155,17 @@
 					id="image_container"
 					class="flex gap-x-2 flex-wrap justify-between max-h-96 overflow-scroll"
 				>
-					{#each files as file (file.name)}
-						<div
-							class="relative group/video w-[49%] cursor-pointer aspect-video overflow-hidden my-2 rounded-lg"
-						>
-							{#await extractFramesFromVideo(file)}
-								<div
-									class="w-full h-full animate-pulse bg-neutral-700 my-2 rounded flex items-start"
-								>
-									<span class="p-2">{file.name}</span>
-								</div>
-							{:then result}
+					{#each files as file}
+						{#await extractFramesFromVideo(file)}
+							<div
+								class="w-[49%] aspect-video animate-pulse bg-neutral-700 overflow-hidden my-2 rounded-lg flex"
+							>
+								<span class="p-2 flex-grow">{file.name}</span>
+							</div>
+						{:then result}
+							<div
+								class="relative group/video w-[49%] cursor-pointer aspect-video overflow-hidden my-2 rounded-lg"
+							>
 								<img
 									class="aspect-video"
 									src={result}
@@ -185,7 +175,10 @@
 								/>
 								<button
 									class="absolute top-0 left-0 p-2 w-full bg-gradient-to-b from-neutral-800/90 to-neutral-50/5"
-									on:click={_ => (files = files.filter(e => e != file))}
+									on:click={_ => {
+										files = files.filter(e => e != file);
+										URL.revokeObjectURL(file);
+									}}
 								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
@@ -205,8 +198,8 @@
 								>
 									{file.name}
 								</span>
-							{/await}
-						</div>
+							</div>
+						{/await}
 					{/each}
 				</div>
 

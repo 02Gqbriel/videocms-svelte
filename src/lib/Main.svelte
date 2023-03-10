@@ -8,6 +8,12 @@
 	import { currentFolderID, leaveFolder } from '../util/folderTraversing';
 	import { doubletap } from '../util/doubletap';
 	import { refreshAuth, token, tokenExp } from '../util/auth';
+	import localforage from 'localforage';
+
+	localforage.config({
+		name: 'video-cms',
+		driver: [localforage.INDEXEDDB, localforage.WEBSQL],
+	});
 
 	let fileUpload = writable<boolean>(false);
 

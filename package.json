@@ -29,6 +29,7 @@
 	"dependencies": {
 		"comlink": "^4.4.1",
 		"dayjs": "^1.11.7",
+		"localforage": "^1.10.0",
 		"svelte-french-toast": "^1.0.3",
 		"svelte-gestures": "^1.4.1",
 		"vite-imagetools": "^4.0.18",
