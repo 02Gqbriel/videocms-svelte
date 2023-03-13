@@ -123,6 +123,12 @@
 				bind:this={ref}
 				on:click={e => e.preventDefault()}
 				on:input={() => (ref.style.width = ref.value.length + 'ch')}
+				on:keydown={e => {
+					if (e.key === ' ') {
+						e.preventDefault();
+						ref.value += ' ';
+					}
+				}}
 				style="width: {item.Name.length + 'ch'};"
 				class="bg-neutral-900 group-hover/item:bg-neutral-800/0 z-10 active:outline-none focus:outline-none {rename
 					? ''
