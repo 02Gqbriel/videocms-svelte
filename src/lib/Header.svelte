@@ -3,12 +3,14 @@
 	import { refreshItems } from '../util/files';
 	//@ts-ignore
 	import image from '../assets/logo.png?w=30;40;100&quality=100&format=webp;jpg&picture';
+	import { selected } from '../util/selected';
+	import { confirmation } from '../stores';
 	const sources = Object.entries(image.sources) satisfies [
 		string,
 		{ src: string; w: number }[]
 	][];
 
-	export let setNewFolder: (v: boolean) => boolean;
+	export let newFolder: Writable<boolean>;
 	export let fileUpload: Writable<boolean>;
 </script>
 
@@ -57,7 +59,7 @@
 
 		<button
 			class="flex items-center gap-2  px-3 py-1.5 rounded hover:bg-neutral-800/50"
-			on:click={v => setNewFolder(true)}
+			on:click={() => newFolder.set(true)}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +77,7 @@
 		</button>
 		<button
 			on:click={() => fileUpload.set(true)}
-			class="flex items-center gap-2 ml-1 bg-blue-700 px-3 py-1.5 mr-2 rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
+			class="flex items-center gap-2 ml-1 bg-blue-700 px-3 py-1.5  rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -92,5 +94,31 @@
 
 			<span>New file</span>
 		</button>
+
+		{#if $selected.length > 0}
+			<button
+				on:click={async e => {
+					e.preventDefault();
+
+					confirmation.set(true);
+				}}
+				title="Delete selected items"
+				class="flex items-center gap-2 ml-1 bg-red-700 px-3 py-1.5 mr-2 rounded hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-500"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 20 20"
+					fill="currentColor"
+					class="w-5 h-5 "
+				>
+					<path
+						fill-rule="evenodd"
+						d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
+						clip-rule="evenodd"
+					/>
+				</svg>
+				<span>Delete Items</span>
+			</button>
+		{/if}
 	</div>
 </header>

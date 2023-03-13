@@ -3,12 +3,12 @@
 	import { onMount } from 'svelte';
 	import { get, writable } from 'svelte/store';
 	import VirtualList from './VirtualList.svelte';
-	import { createFolder, files, refreshItems } from '../util/files';
+	import { files, refreshItems } from '../util/files';
 	import { default as ListItem } from './Item.svelte';
 	import { currentFolderID, leaveFolder } from '../util/folderTraversing';
-	import { doubletap } from '../util/doubletap';
 	import { refreshAuth, token, tokenExp } from '../util/auth';
 	import localforage from 'localforage';
+	import { selected, selectItem, unselectItem } from '../util/selected';
 
 	localforage.config({
 		name: 'video-cms',
@@ -16,12 +16,11 @@
 	});
 
 	let fileUpload = writable<boolean>(false);
-
-	let newFolder = false;
-	let ref: HTMLInputElement;
-	let setNewFolder = (v: boolean) => (newFolder = v);
+	let newFolder = writable<boolean>(false);
 
 	let innerHeight: number;
+
+	$: console.log($selected);
 
 	onMount(() => {
 		if (!Number.isNaN(Number(get(tokenExp)))) {
@@ -30,17 +29,6 @@
 			token.set(undefined);
 		}
 	});
-
-	async function handleSubmit(e: SubmitEvent) {
-		e.preventDefault();
-
-		const success = await createFolder(ref.value, $currentFolderID);
-
-		if (success) {
-			newFolder = false;
-			ref.value = '';
-		}
-	}
 </script>
 
 <svelte:window bind:innerHeight />
@@ -52,7 +40,7 @@
 {/if}
 
 {#await import('./Header.svelte') then { default: Header }}
-	<svelte:component this={Header} {setNewFolder} {fileUpload} />
+	<svelte:component this={Header} {newFolder} {fileUpload} />
 {/await}
 
 <div class="s">
@@ -60,75 +48,79 @@
 		<div>
 			<div>l</div>
 		</div>
-	{:then _}
+	{:then}
 		<div class="text-sm">
-			{#if newFolder}
-				<form
-					on:submit={handleSubmit}
-					class=" border-b flex items-center justify-between border-opacity-10 border-gray-600  cursor-pointer hover:bg-neutral-800/50"
-				>
-					<div class="flex grow items-center  gap-2 ">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							class="w-5 h-5 fill-blue-700 m-3 mr-0"
-						>
-							<path
-								d="M3.75 3A1.75 1.75 0 002 4.75v3.26a3.235 3.235 0 011.75-.51h12.5c.644 0 1.245.188 1.75.51V6.75A1.75 1.75 0 0016.25 5h-4.836a.25.25 0 01-.177-.073L9.823 3.513A1.75 1.75 0 008.586 3H3.75zM3.75 9A1.75 1.75 0 002 10.75v4.5c0 .966.784 1.75 1.75 1.75h12.5A1.75 1.75 0 0018 15.25v-4.5A1.75 1.75 0 0016.25 9H3.75z"
-							/>
-						</svg>
-
-						<input
-							placeholder="New folder name"
-							type="text"
-							class="bg-transparent w-full h-full focus:outline-none placeholder:font-light placeholder:text-neutral-700"
-							bind:this={ref}
-							on:load={() => ref.focus({ preventScroll: true })}
-						/>
-					</div>
-
-					<div class="flex items-center justify-end mr-2">
-						<button
-							on:click={() => (newFolder = false)}
-							type="button"
-							class="m-2 p-1 rounded hover:bg-neutral-800"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								class="w-6 h-6"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</button>
-
-						<button
-							type="submit"
-							class="m-1.5 md:hidden p-2 rounded hover:bg-neutral-800"
-						>
-							Submit
-						</button>
-					</div>
-				</form>
+			{#if $newFolder}
+				{#await import('./newFolder.svelte') then { default: newFolderComponent }}
+					<svelte:component this={newFolderComponent} {newFolder} />
+				{/await}
 			{/if}
 
 			<div
-				class=" border-b flex items-center justify-between border-opacity-10 border-gray-600  cursor-pointer hover:bg-neutral-800/50 "
+				class="h-[50px] overflow-hidden border-b flex items-center justify-between border-opacity-10 border-gray-600  cursor-pointer  "
 			>
+				<div
+					title="Select all"
+					class="px-3 h-full flex items-center border-r border-opacity-10 border-gray-800 hover:bg-neutral-800/50"
+				>
+					{#if $selected.length === $files.length && $files.length > 0}
+						<button
+							on:click={e => {
+								e.preventDefault();
+
+								for (const file of get(files)) {
+									unselectItem(file.ID, file.Type);
+								}
+							}}
+						>
+							<svg
+								class="fill-neutral-700 hover:fill-neutral-600 active:fill-neutral-300"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="#000000"
+								width="24"
+								height="24"
+							>
+								<path
+									d="M7 5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm4 10.414-2.707-2.707 1.414-1.414L11 12.586l3.793-3.793 1.414 1.414L11 15.414z"
+								/>
+							</svg>
+						</button>
+					{:else}
+						<button
+							disabled={$files.length == 0}
+							class="disabled:cursor-not-allowed"
+							on:click={e => {
+								e.preventDefault();
+
+								for (const file of get(files)) {
+									selectItem(file.ID, file.Type);
+								}
+							}}
+						>
+							<svg
+								class="fill-neutral-700 hover:fill-neutral-600 active:fill-neutral-300"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="#000000"
+								width="24"
+								height="24"
+							>
+								<path
+									d="M7 5c-1.103 0-2 .897-2 2v10c0 1.103.897 2 2 2h10c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2H7zm0 12V7h10l.002 10H7z"
+								/>
+							</svg>
+						</button>
+					{/if}
+				</div>
 				<button
 					title={$currentFolderID == 0
 						? 'Already in root folder'
 						: 'Return to Parentfolder'}
 					disabled={$currentFolderID == 0}
-					use:doubletap
-					on:doubletap={() => $currentFolderID > 0 && leaveFolder()}
-					class="p-3 flex-grow flex items-center gap-2 {$currentFolderID == 0
+					on:click={() => $currentFolderID > 0 && leaveFolder()}
+					class=" p-3 h-full  flex-grow flex items-center hover:bg-neutral-800/50 gap-2 {$currentFolderID ==
+					0
 						? 'opacity-40 cursor-not-allowed'
 						: ''}"
 				>

@@ -177,7 +177,6 @@
 									class="absolute top-0 left-0 p-2 w-full bg-gradient-to-b from-neutral-800/90 to-neutral-50/5"
 									on:click={_ => {
 										files = files.filter(e => e != file);
-										URL.revokeObjectURL(file);
 									}}
 								>
 									<svg

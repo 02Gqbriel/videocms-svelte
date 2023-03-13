@@ -1,5 +1,4 @@
 <script>
-	import { flip } from 'svelte/animate';
 	import { onMount, tick } from 'svelte';
 
 	// props
