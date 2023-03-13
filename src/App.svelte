@@ -15,7 +15,7 @@
 <div style="overflow-x: overlay;" class="text-gray-200 bg-neutral-900">
 	{#await checkAuth()}
 		loading
-	{:then _}
+	{:then}
 		<div class="min-h-screen ">
 			{#if $token !== 'undefined'}
 				<div class="max-h-screen overflow-hidden">

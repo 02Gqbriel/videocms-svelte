@@ -7,13 +7,7 @@
 	import { default as ListItem } from './Item.svelte';
 	import { currentFolderID, leaveFolder } from '../util/folderTraversing';
 	import { refreshAuth, token, tokenExp } from '../util/auth';
-	import localforage from 'localforage';
 	import { selected, selectItem, unselectItem } from '../util/selected';
-
-	localforage.config({
-		name: 'video-cms',
-		driver: [localforage.INDEXEDDB, localforage.WEBSQL],
-	});
 
 	let fileUpload = writable<boolean>(false);
 	let newFolder = writable<boolean>(false);

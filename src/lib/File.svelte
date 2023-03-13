@@ -1,7 +1,12 @@
 <script lang="ts" async="true">
 	import type { Writable } from 'svelte/store';
 	import { refreshItems, uploadFile } from '../util/files';
-	import localforage from 'localforage';
+	import { config, getItem, setItem, INDEXEDDB, WEBSQL } from 'localforage';
+
+	config({
+		name: 'video-cms',
+		driver: [INDEXEDDB, WEBSQL],
+	});
 
 	export let fileUpload: Writable<boolean>;
 
@@ -10,7 +15,7 @@
 
 	async function extractFramesFromVideo(file: File) {
 		return new Promise<string>(async resolve => {
-			const result = await localforage.getItem<string>(file.name);
+			const result = await getItem<string>(file.name);
 
 			if (result !== null) resolve(result);
 
@@ -45,7 +50,7 @@
 			context.drawImage(video, 0, 0, w, h);
 			let base64ImageData = canvas.toDataURL('image/webp', 0.1);
 
-			await localforage.setItem(file.name, base64ImageData);
+			await setItem(file.name, base64ImageData);
 
 			resolve(base64ImageData);
 		});

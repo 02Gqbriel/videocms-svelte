@@ -15,8 +15,4 @@ export default defineConfig({
 		viteCompression({ algorithm: 'gzip' }),
 		eslint(),
 	],
-
-	optimizeDeps: {
-		force: true,
-	},
 });
