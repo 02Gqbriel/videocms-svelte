@@ -1,17 +1,14 @@
 <script lang="ts">
-	import type { Writable } from 'svelte/store';
 	import { refreshItems } from '../util/files';
 	//@ts-ignore
 	import image from '../assets/logo.png?w=30;40;100&quality=100&format=webp;jpg&picture';
 	import { selected } from '../util/selected';
-	import { confirmation } from '../stores';
+	import { confirmation, fileUpload, newFolder } from '../stores';
+
 	const sources = Object.entries(image.sources) satisfies [
 		string,
 		{ src: string; w: number }[]
 	][];
-
-	export let newFolder: Writable<boolean>;
-	export let fileUpload: Writable<boolean>;
 </script>
 
 <header class="w-screen flex justify-between items-center p-3 px-3">
@@ -21,7 +18,7 @@
 				<source
 					width={50}
 					height={50}
-					srcset={images.map(i => i.src + ' ' + i.w + 'w').join(', ')}
+					srcset={images.map((i) => i.src + ' ' + i.w + 'w').join(', ')}
 					type="image/{format}"
 				/>
 			{/each}
@@ -97,7 +94,7 @@
 
 		{#if $selected.length > 0}
 			<button
-				on:click={async e => {
+				on:click={async (e) => {
 					e.preventDefault();
 
 					confirmation.set(true);
@@ -109,7 +106,7 @@
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"
 					fill="currentColor"
-					class="w-5 h-5 "
+					class="w-5 h-5 mx-px"
 				>
 					<path
 						fill-rule="evenodd"
@@ -117,7 +114,6 @@
 						clip-rule="evenodd"
 					/>
 				</svg>
-				<span>Delete Items</span>
 			</button>
 		{/if}
 	</div>

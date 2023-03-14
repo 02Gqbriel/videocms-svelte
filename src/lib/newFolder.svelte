@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { Writable } from 'svelte/store';
+	import { newFolder } from '../stores';
 	import { createFolder } from '../util/files';
 	import { currentFolderID } from '../util/folderTraversing';
 
-	export let newFolder: Writable<boolean>;
 	let ref: HTMLInputElement;
 
 	$: newFolder && ref && ref.focus();
@@ -64,10 +63,7 @@
 			</svg>
 		</button>
 
-		<button
-			type="submit"
-			class="m-1.5 md:hidden p-2 rounded hover:bg-neutral-800"
-		>
+		<button type="submit" class="m-1.5 md:hidden p-2 rounded hover:bg-neutral-800">
 			Submit
 		</button>
 	</div>

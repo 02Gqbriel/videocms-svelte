@@ -4,8 +4,6 @@
 	import { deleteFile, deleteFolder } from '../util/files';
 	import { selected, unselectItem } from '../util/selected';
 
-	export let Type: 'File' | 'Folder';
-
 	async function deleteItems() {
 		for (const item of get(selected)) {
 			if (item.type == 'Folder') {
@@ -47,9 +45,8 @@
 			<div class="mt-4 md:mt-0 md:ml-6 text-center md:text-left">
 				<p class="font-bold text-2xl">Are you sure?</p>
 				<p class="text-sm  mt-1">
-					{Type == 'File'
-						? 'By deleting this File you will lose all your encodings. This process is irreversible and the File cannot be restored.'
-						: 'By deleting this or these Folder/File you will lose all nested Files and Foldes. This process is irreversible and the Folder cannot be restored.'}
+					By deleting this or these Folder/File you will lose all nested Files and Foldes.
+					This process is irreversible and the Folder cannot be restored.
 				</p>
 			</div>
 		</div>

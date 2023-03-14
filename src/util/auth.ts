@@ -6,12 +6,12 @@ import dayjs from 'dayjs';
 const storedToken = (sessionStorage.token as string) ?? undefined;
 export const token = writable<string>(storedToken);
 
-token.subscribe(v => v !== 'undefined' && (sessionStorage.token = v));
+token.subscribe((v) => v !== 'undefined' && (sessionStorage.token = v));
 
 const storedTokenExp = (sessionStorage.tokenExp as string) ?? undefined;
 export const tokenExp = writable<string>(storedTokenExp);
 
-tokenExp.subscribe(v => v !== 'undefined' && (sessionStorage.tokenExp = v));
+tokenExp.subscribe((v) => v !== 'undefined' && (sessionStorage.tokenExp = v));
 
 export async function login(username: string, password: string) {
 	const formData = new FormData();
@@ -19,14 +19,19 @@ export async function login(username: string, password: string) {
 	formData.append('username', username);
 	formData.append('password', password);
 
-	const response = await fetch(`${url}/api/auth/login`, {
-		method: 'POST',
-		body: formData,
-	});
+	const response = await toast.promise(
+		fetch(`${url}/api/auth/login`, {
+			method: 'POST',
+			body: formData,
+		}),
+		{
+			loading: 'Logging in',
+			error: "Counldn't login",
+			success: 'Succesfully logged in',
+		}
+	);
 
 	if (response.ok) {
-		toast.success('Logged in successfully');
-
 		const { exp, token: tokenNew } = (await response.json()) as {
 			exp: string;
 			token: string;
@@ -45,13 +50,20 @@ export async function login(username: string, password: string) {
 export async function checkAuth() {
 	if (get(token) == 'undefined') return;
 
-	const response = await fetch(`${url}/api/auth/check`, {
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-	});
+	const response = await toast.promise(
+		fetch(`${url}/api/auth/check`, {
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+		}),
+		{
+			loading: 'Validating token',
+			error: 'Token invalid',
+			success: 'Token valid',
+		}
+	);
 
 	if (response.ok) {
 		const json = (await response.json()) as { exp: string; username: string };
@@ -62,8 +74,6 @@ export async function checkAuth() {
 
 		return;
 	}
-
-	toast.error('Token expired');
 
 	token.set('undefined');
 }
@@ -95,6 +105,8 @@ export async function refreshAuth() {
 
 		return;
 	}
+
+	toast.error("Token couldn't be renewed");
 
 	return token.set('undefined');
 }

@@ -23,21 +23,18 @@ export async function refreshItems() {
 }
 
 export async function listFolders(): Promise<Item[]> {
-	const res = await fetch(
-		`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`,
-		{
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-		}
-	);
+	const res = await fetch(`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`, {
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+	});
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map(v => ({
+		const items = json.map((v) => ({
 			...v,
 			Type: 'Folder' as 'Folder' | 'File',
 		}));
@@ -52,20 +49,25 @@ export async function createFolder(name: string, parentFolderID: number) {
 	formData.append('name', name);
 	formData.append('ParentFolderID', parentFolderID.toString());
 
-	const res = await fetch(`${url}/api/folder`, {
-		method: 'POST',
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-		body: formData,
-	});
+	const res = await toast.promise(
+		fetch(`${url}/api/folder`, {
+			method: 'POST',
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+			body: formData,
+		}),
+		{
+			loading: `Creating folder ${name}`,
+			error: `Folder ${name} couldn't be created`,
+			success: `Folder ${name} has been created successfully`,
+		}
+	);
 
 	if (res.ok) {
 		await refreshItems();
-
-		toast.success(`Folder ${name} has been created successfully`);
 	}
 
 	return res.ok;
@@ -82,20 +84,25 @@ export async function updateFolder(
 	formData.append('ParentFolderID', parentFolderID.toString());
 	formData.append('Name', name);
 
-	const res = await fetch(`${url}/api/file`, {
-		method: 'PUT',
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-		body: formData,
-	});
+	const res = await toast.promise(
+		fetch(`${url}/api/file`, {
+			method: 'PUT',
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+			body: formData,
+		}),
+		{
+			loading: `Renamed folder to ${name}`,
+			error: "Folder couldn't be renamed",
+			success: `Folder renamed to ${name} successfully`,
+		}
+	);
 
 	if (res.ok) {
 		await refreshItems();
-
-		toast.success(`Renamed folder to ${name} successfully`);
 	}
 
 	return res.ok;
@@ -106,39 +113,41 @@ export async function deleteFolder(fileID: number) {
 
 	formData.append('FolderID', fileID.toString());
 
-	const res = await fetch(`${url}/api/folder`, {
-		method: 'DELETE',
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-		body: formData,
-	});
-
-	if (res.ok) {
-		await refreshItems();
-
-		toast.success(`Folder has been deleted`);
-	}
-}
-
-export async function listFiles(): Promise<Item[]> {
-	const res = await fetch(
-		`${url}/api/files?ParentFolderID=${get(currentFolderID)}`,
-		{
+	const res = await toast.promise(
+		fetch(`${url}/api/folder`, {
+			method: 'DELETE',
 			headers: {
 				Authorization: 'Basic ' + get(token),
 				'Access-Control-Allow-Headers': 'Authorization',
 				'Access-Control-Allow-Credentials': 'true',
 			},
+			body: formData,
+		}),
+		{
+			success: `Folder has been deleted`,
+			loading: 'Deleting folder',
+			error: "Folder couldn't be deleted",
 		}
 	);
 
 	if (res.ok) {
+		await refreshItems();
+	}
+}
+
+export async function listFiles(): Promise<Item[]> {
+	const res = await fetch(`${url}/api/files?ParentFolderID=${get(currentFolderID)}`, {
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+	});
+
+	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map(v => ({
+		const items = json.map((v) => ({
 			...v,
 			Type: 'File' as 'Folder' | 'File',
 		}));
@@ -152,20 +161,25 @@ export async function deleteFile(folderID: number) {
 
 	formData.append('LinkID', folderID.toString());
 
-	const res = await fetch(`${url}/api/file`, {
-		method: 'DELETE',
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-		body: formData,
-	});
+	const res = await toast.promise(
+		fetch(`${url}/api/file`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+			body: formData,
+		}),
+		{
+			success: `File has been deleted`,
+			loading: 'Deleting file',
+			error: "File couldn't be deleted",
+		}
+	);
 
 	if (res.ok) {
 		await refreshItems();
-
-		toast.success(`File has been deleted`);
 	}
 }
 
@@ -176,23 +190,26 @@ export async function uploadFile(file: File): Promise<boolean> {
 	formData.append('file', file);
 	formData.append('ParentFolderID', get(currentFolderID).toString());
 
-	const response = await fetch(`${url}/api/file`, {
-		method: 'POST',
-		body: formData,
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-	});
-
-	if (response.ok) {
-		toast.success(
-			`File ${
-				file.name.length > 17 ? file.name.substring(0, 17) + '...' : file.name
-			} has been uploaded successfully`
-		);
-	}
+	const response = await toast.promise(
+		fetch(`${url}/api/file`, {
+			method: 'POST',
+			body: formData,
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+		}),
+		{
+			success: `File  ${
+				file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name
+			} has been uploaded`,
+			loading: 'Uploading file',
+			error: `File  ${
+				file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name
+			} couldn't be uploaded`,
+		}
+	);
 
 	return response.ok;
 }
