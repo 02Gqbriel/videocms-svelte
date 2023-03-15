@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import VirtualList from './VirtualList.svelte';
-	import { files, refreshItems } from '../util/files';
+	import { files, filesLoaded, refreshItems } from '../util/files';
 	import { default as ListItem } from './Item.svelte';
 	import { currentFolderID, leaveFolder } from '../util/folderTraversing';
 	import { refreshAuth, token, tokenExp } from '../util/auth';
@@ -11,6 +11,8 @@
 	import { confirmation, fileUpload, newFolder } from '../stores';
 
 	let innerHeight: number;
+
+	refreshItems();
 
 	onMount(() => {
 		if (!Number.isNaN(Number(get(tokenExp)))) {
@@ -35,17 +37,23 @@
 	{/await}
 {/if}
 
-{#await import('./Header.svelte') then { default: Header }}
+{#await import('./Header.svelte')}
+	<header class="w-screen flex justify-between items-center p-3 px-3">
+		<div class="w-11 h-11 animate-pulse rounded bg-neutral-800" />
+
+		<div class="flex gap-2">
+			<div class="w-[32px] h-[32px] rounded animate-pulse bg-neutral-800" />
+
+			<div class="w-[100px] h-[32px] rounded animate-pulse bg-neutral-800" />
+
+			<div class="w-[100px] h-[32px] rounded animate-pulse bg-neutral-800" />
+		</div>
+	</header>
+{:then { default: Header }}
 	<svelte:component this={Header} />
 {/await}
 
 <div class="text-sm">
-	{#if $newFolder}
-		{#await import('./newFolder.svelte') then { default: newFolderComponent }}
-			<svelte:component this={newFolderComponent} />
-		{/await}
-	{/if}
-
 	<div
 		class="h-[50px] overflow-hidden border-b flex items-center justify-between border-opacity-10 border-gray-600  cursor-pointer  hover:bg-neutral-800/50"
 	>
@@ -127,7 +135,22 @@
 			<span class=" font-black text-xs">. . /</span>
 		</button>
 	</div>
-	{#await refreshItems()}
+
+	{#if $newFolder}
+		{#await import('./newFolder.svelte') then { default: newFolderComponent }}
+			<svelte:component this={newFolderComponent} />
+		{/await}
+	{/if}
+
+	{#if $filesLoaded}
+		<VirtualList
+			height={innerHeight - (newFolder ? 161 : 112) + 'px'}
+			items={$files}
+			let:item
+		>
+			<ListItem {item} />
+		</VirtualList>
+	{:else}
 		<div>
 			{#each [0, 0, 0, 0] as _}
 				<div
@@ -148,13 +171,5 @@
 				</div>
 			{/each}
 		</div>
-	{:then}
-		<VirtualList
-			height={innerHeight - (newFolder ? 118 : 70) + 'px'}
-			items={$files}
-			let:item
-		>
-			<ListItem {item} />
-		</VirtualList>
-	{/await}
+	{/if}
 </div>

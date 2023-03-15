@@ -16,10 +16,14 @@ export interface Item {
 	UUID?: string;
 }
 
+export const filesLoaded = writable<boolean>(false);
+
 export const files = writable<Item[]>([]);
 
 export async function refreshItems() {
+	filesLoaded.set(false);
 	files.set([...(await listFolders()), ...(await listFiles())]);
+	filesLoaded.set(true);
 }
 
 export async function listFolders(): Promise<Item[]> {

@@ -9,7 +9,22 @@
 		string,
 		{ src: string; w: number }[]
 	][];
+
+	console.log(image);
 </script>
+
+<svelte:head>
+	{#each sources as [format, images]}
+		<link
+			rel="preload"
+			as="image"
+			imagesrcset={images.map((i) => i.src + ' ' + i.w + 'w').join(', ')}
+			type="image/{format}"
+		/>
+	{/each}
+
+	<link rel="preload" as="image" href={image.fallback.src} />
+</svelte:head>
 
 <header class="w-screen flex justify-between items-center p-3 px-3">
 	<h1 class="w-10">

@@ -21,9 +21,9 @@
 
 <form
 	on:submit={handleSubmit}
-	class=" border-b flex items-center justify-between border-opacity-10 border-gray-600  cursor-pointer hover:bg-neutral-800/50"
+	class=" border-b flex items-center pl-9 justify-between border-opacity-10 border-gray-600  cursor-pointer hover:bg-neutral-800/50"
 >
-	<div class="flex grow items-center  gap-2 ">
+	<div class="flex grow items-center justify-center gap-2 ">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 20 20"
@@ -38,7 +38,7 @@
 		<input
 			placeholder="New folder name"
 			type="text"
-			class="bg-transparent w-full h-full focus:outline-none placeholder:font-light placeholder:text-neutral-700"
+			class="bg-transparent w-full h-12 grow focus:outline-none placeholder:font-light placeholder:text-neutral-700"
 			bind:this={ref}
 		/>
 	</div>
