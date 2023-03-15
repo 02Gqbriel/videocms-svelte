@@ -7,6 +7,18 @@
 	import { enterFolder } from '../util/folderTraversing';
 	import { selected, selectItem, unselectItem } from '../util/selected';
 	import { url } from '../stores';
+	import { get, writable } from 'svelte/store';
+	import { dragndrop } from '../util/moveFolder';
+
+	let dragged = writable<{ dragged: Item | null; dropped: Item | null }>({
+		dragged: null,
+		dropped: null,
+	});
+
+	let mX;
+	let mY;
+
+	let dragging = null;
 
 	export let item: Item;
 
@@ -36,17 +48,69 @@
 			window.open(`${url}/${item.UUID}`, '_blank');
 		}
 	}
+
+	function drop(
+		e: PointerEvent & { currentTarget: EventTarget & HTMLButtonElement }
+	) {
+		dragging = false;
+
+		console.log(e);
+	}
+
+	function drag(e: DragEvent) {
+		e.preventDefault();
+
+		dragging = true;
+
+		window.onpointerup = () => {
+			dragging = false;
+
+			window.onpointerup = null;
+		};
+
+		console.log(e);
+	}
+
+	function pointermove(e: PointerEvent) {
+		if (!dragging) return;
+
+		mX = e.clientX;
+		mY = e.clientY;
+	}
+
+	let dragover = false;
+
+	$: console.log(dragover);
 </script>
 
+<svelte:window on:pointermove={pointermove} />
+
+{#if dragging}
+	<div style="left:{mX}px;top:{mY}px " class="fixed z-50">dragging</div>
+{/if}
+
 <button
+	class:hidden={dragging}
+	class:cursor-pointer={dragging}
+	class:bg-neutral-800={dragover}
+	data-name={item.Name}
+	draggable="true"
+	use:dragndrop
+	on:drop={e => e.preventDefault()}
+	on:dragover={() => (dragover = true)}
+	on:dragexit={() => (dragover = false)}
+	on:dragstart={drag}
+	on:pointerup={drop}
+	on:pointerover={() => dragging && (dragover = true)}
+	on:pointerleave={() => dragging && (dragover = true)}
 	on:click={handleClick}
 	class="border-b group/item w-full flex items-center justify-between border-opacity-10
 	border-gray-600 cursor-pointer hover:bg-neutral-800/50"
 >
 	<div class="flex items-center  gap-2 p-3">
-		{#if $selected.some((e) => e.id === item.ID && e.type === item.Type)}
+		{#if $selected.some(e => e.id === item.ID && e.type === item.Type)}
 			<button
-				on:click={(e) => {
+				on:click={e => {
 					e.preventDefault();
 					unselectItem(item.ID, item.Type);
 				}}
@@ -66,7 +130,7 @@
 			</button>
 		{:else}
 			<button
-				on:click={(e) => {
+				on:click={e => {
 					e.preventDefault();
 					selectItem(item.ID, item.Type);
 				}}
@@ -115,9 +179,9 @@
 				readonly={!rename}
 				value={item.Name}
 				bind:this={ref}
-				on:click={(e) => e.preventDefault()}
+				on:click={e => e.preventDefault()}
 				on:input={() => (ref.style.width = ref.value.length + 'ch')}
-				on:keydown={(e) => {
+				on:keydown={e => {
 					if (e.key === ' ') {
 						e.preventDefault();
 						ref.value += ' ';
@@ -131,10 +195,12 @@
 
 			{#if item.Type == 'Folder'}
 				{#if rename}
-					<div class="flex items-center gap-2 absolute -right-12 pl-2 opacity-90 p-1">
+					<div
+						class="flex items-center gap-2 absolute -right-12 pl-2 opacity-90 p-1"
+					>
 						<button
 							type="submit"
-							on:click={(e) => {
+							on:click={e => {
 								e.preventDefault;
 								handleRename(e);
 							}}
@@ -155,7 +221,7 @@
 						</button>
 
 						<button
-							on:click={async (e) => {
+							on:click={async e => {
 								e.preventDefault();
 								rename = false;
 								ref.value = item.Name;
@@ -177,7 +243,7 @@
 				{:else}
 					<button
 						type="button"
-						on:click={(e) => {
+						on:click={e => {
 							e.preventDefault();
 							rename = true;
 							ref.focus();
@@ -203,7 +269,9 @@
 
 	<div class="flex items-center justify-end w-96 px-3 mr-2">
 		<span
-			title="This {item.Type.toLowerCase()} was created {dayjs(item.CreatedAt).fromNow()}"
+			title="This {item.Type.toLowerCase()} was created {dayjs(
+				item.CreatedAt
+			).fromNow()}"
 		>
 			{dayjs(item.CreatedAt).fromNow()}
 		</span>

@@ -13,6 +13,7 @@
 		"@babel/core": "^7.21.0",
 		"@babel/eslint-parser": "^7.19.1",
 		"@sveltejs/vite-plugin-svelte": "^2.0.3",
+		"@total-typescript/ts-reset": "^0.4.2",
 		"@tsconfig/svelte": "^3.0.0",
 		"@types/node": "^18.15.1",
 		"@typescript-eslint/parser": "^5.54.1",

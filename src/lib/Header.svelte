@@ -9,8 +9,6 @@
 		string,
 		{ src: string; w: number }[]
 	][];
-
-	console.log(image);
 </script>
 
 <svelte:head>
@@ -18,7 +16,7 @@
 		<link
 			rel="preload"
 			as="image"
-			imagesrcset={images.map((i) => i.src + ' ' + i.w + 'w').join(', ')}
+			imagesrcset={images.map(i => i.src + ' ' + i.w + 'w').join(', ')}
 			type="image/{format}"
 		/>
 	{/each}
@@ -33,7 +31,7 @@
 				<source
 					width={50}
 					height={50}
-					srcset={images.map((i) => i.src + ' ' + i.w + 'w').join(', ')}
+					srcset={images.map(i => i.src + ' ' + i.w + 'w').join(', ')}
 					type="image/{format}"
 				/>
 			{/each}
@@ -109,7 +107,7 @@
 
 		{#if $selected.length > 0}
 			<button
-				on:click={async (e) => {
+				on:click={async e => {
 					e.preventDefault();
 
 					confirmation.set(true);

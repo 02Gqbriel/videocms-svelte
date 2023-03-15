@@ -17,15 +17,16 @@
 </script>
 
 <form
-	class="max-w-screen-sm mx-auto flex justify-center flex-col h-screen p-16 gap-5"
+	class="max-w-screen-sm mx-auto flex justify-center flex-col h-screen p-4 md:p-16 gap-5"
 	method="POST"
 	autocomplete="new-password"
 	on:submit={handleSubmit}
 >
 	<h1 class="text-5xl  font-bold mb-5">Login</h1>
 
-	<fieldset class="">
-		<label for="username" class="block mb-2 text-sm font-medium">Username</label>
+	<fieldset>
+		<label for="username" class="block mb-2 text-sm font-medium">Username</label
+		>
 		<input
 			type="text"
 			id="username"
@@ -37,8 +38,10 @@
 		/>
 	</fieldset>
 
-	<fieldset class="">
-		<label for="password" class="block mb-2 text-sm font-medium ">Password</label>
+	<fieldset>
+		<label for="password" class="block mb-2 text-sm font-medium "
+			>Password</label
+		>
 		<input
 			type="password"
 			id="password"
