@@ -35,7 +35,9 @@
 	},
 	"dependencies": {
 		"dayjs": "^1.11.7",
+		"hash.js": "^1.1.7",
 		"localforage": "^1.10.0",
+		"raf-throttle": "^2.0.6",
 		"svelte-french-toast": "^1.0.3",
 		"svelte-gestures": "^1.4.1"
 	}

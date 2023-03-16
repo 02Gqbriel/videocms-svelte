@@ -60,7 +60,7 @@
 		<div title="Select all" class="pl-3 pr-2.5 h-full flex items-center">
 			{#if $selected.length === $files.length && $files.length > 0}
 				<button
-					on:click={e => {
+					on:click={(e) => {
 						e.preventDefault();
 
 						for (const file of get(files)) {
@@ -85,7 +85,7 @@
 				<button
 					disabled={$files.length == 0}
 					class="disabled:cursor-not-allowed"
-					on:click={e => {
+					on:click={(e) => {
 						e.preventDefault();
 
 						for (const file of get(files)) {
@@ -109,13 +109,10 @@
 			{/if}
 		</div>
 		<button
-			title={$currentFolderID == 0
-				? 'Already in root folder'
-				: 'Return to Parentfolder'}
+			title={$currentFolderID == 0 ? 'Already in root folder' : 'Return to Parentfolder'}
 			disabled={$currentFolderID == 0}
 			on:click={() => $currentFolderID > 0 && leaveFolder() && selected.set([])}
-			class=" py-3 h-full  flex-grow flex items-center gap-2 {$currentFolderID ==
-			0
+			class=" py-3 h-full  flex-grow flex items-center gap-2 {$currentFolderID == 0
 				? 'opacity-40 cursor-not-allowed'
 				: ''}"
 		>
@@ -137,7 +134,7 @@
 	</div>
 
 	{#if $newFolder}
-		{#await import('./newFolder.svelte') then { default: newFolderComponent }}
+		{#await import('./NewFolder.svelte') then { default: newFolderComponent }}
 			<svelte:component this={newFolderComponent} />
 		{/await}
 	{/if}
@@ -164,14 +161,10 @@
 							class="h-[20px] m-2 aspect-square animate-pulse bg-neutral-800 w-min rounded"
 						/>
 
-						<div
-							class="h-[24px] m-2.5 w-[200px] animate-pulse bg-neutral-800 rounded"
-						/>
+						<div class="h-[24px] m-2.5 w-[200px] animate-pulse bg-neutral-800 rounded" />
 					</div>
 
-					<div
-						class="h-[24px] m-2.5 w-[200px] animate-pulse bg-neutral-800 rounded"
-					/>
+					<div class="h-[24px] m-2.5 w-[200px] animate-pulse bg-neutral-800 rounded" />
 				</div>
 			{/each}
 		</div>

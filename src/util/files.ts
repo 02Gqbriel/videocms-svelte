@@ -3,6 +3,7 @@ import { get, writable } from 'svelte/store';
 import { url } from '../stores';
 import { token } from './auth';
 import { currentFolderID } from './folderTraversing';
+import { sha256 } from 'hash.js';
 
 export interface Item {
 	ID: number;
@@ -188,7 +189,33 @@ export async function deleteFile(folderID: number) {
 }
 
 export async function uploadFile(file: File): Promise<boolean> {
-	const formData = new FormData();
+	let formData = new FormData();
+
+	formData.append('Name', file.name);
+	formData.append('Sha256', sha256().update(file).digest('hex'));
+	formData.append('ParentFolderID', get(currentFolderID).toString());
+
+	const exists = await fetch(`${url}/api/file/clone`, {
+		method: 'POST',
+		body: formData,
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+	});
+
+	if (exists.ok) {
+		toast.success(
+			`File  ${
+				file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name
+			} has been uploaded`
+		);
+
+		return exists.ok;
+	}
+
+	formData = new FormData();
 
 	formData.append('Name', file.name);
 	formData.append('file', file);
