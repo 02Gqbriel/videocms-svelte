@@ -1,9 +1,10 @@
 {
 	"extends": [
 		// add more generic rule sets here, such as:
-		// "eslint:recommended",
+		"eslint:recommended",
 		"plugin:svelte/recommended",
-		"plugin:svelte/prettier"
+		"plugin:svelte/prettier",
+		"plugin:typescript/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {

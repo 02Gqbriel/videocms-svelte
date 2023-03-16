@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Item } from '../util/files';
 	import throttle from 'raf-throttle';
-	import { draggedItem, targetItem } from '../util/moveFolder';
 
 	export let item: Item;
 
@@ -44,12 +43,4 @@
 		</svg>
 	{/if}
 	{item.Name}
-
-	{#if targetItem !== undefined}
-		<div class="absolute left-0 w-screen bg-black">
-			Move {draggedItem.item.Type}
-			{draggedItem.item.Name} to {targetItem.item.Type}
-			{targetItem.item.Name}
-		</div>
-	{/if}
 </div>
