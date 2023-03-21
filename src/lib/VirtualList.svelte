@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
 	import { onMount, tick } from 'svelte';
+	import type { Item } from '../util/files';
 
 	// props
-	export let items;
+	export let items: Item[];
 	export let height = '100%';
 	export let itemHeight = undefined;
 
@@ -12,16 +13,16 @@
 
 	// local state
 	let height_map = [];
-	let rows;
+	let rows: HTMLCollectionOf<HTMLElement>;
 	let viewport;
-	let contents;
+	let contents: HTMLElement;
 	let viewport_height = 0;
-	let visible;
-	let mounted;
+	let visible: { index: number; data: Item }[];
+	let mounted: boolean;
 
 	let top = 0;
 	let bottom = 0;
-	let average_height;
+	let average_height: number;
 
 	$: visible = items.slice(start, end).map((data, i) => {
 		return { index: i + start, data };
@@ -30,7 +31,7 @@
 	// whenever `items` changes, invalidate the current heightmap
 	$: if (mounted) refresh(items, viewport_height, itemHeight);
 
-	async function refresh(items, viewport_height, itemHeight) {
+	async function refresh(items: Item[], viewport_height: number, itemHeight: number) {
 		const { scrollTop } = viewport;
 
 		await tick(); // wait until the DOM is up to date
@@ -126,8 +127,12 @@
 
 	// trigger initial refresh
 	onMount(() => {
-		rows = contents.getElementsByTagName('svelte-virtual-list-row');
+		rows = contents.getElementsByTagName(
+			'svelte-virtual-list-row'
+		) as HTMLCollectionOf<HTMLElement>;
 		mounted = true;
+
+		console.log(contents, rows);
 	});
 </script>
 
@@ -135,34 +140,21 @@
 	bind:this={viewport}
 	bind:offsetHeight={viewport_height}
 	on:scroll={handle_scroll}
-	style="height: {height};"
+	style="height: {height};
+		position: relative;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		display: block;
+		"
 >
 	<svelte-virtual-list-contents
 		bind:this={contents}
-		style="padding-top: {top}px; padding-bottom: {bottom}px;"
+		style="padding-top: {top}px; padding-bottom: {bottom}px; display: block;"
 	>
 		{#each visible as row (row.index)}
-			<svelte-virtual-list-row>
+			<svelte-virtual-list-row style="display: block; overflow: hidden;">
 				<slot item={row.data}>Missing template</slot>
 			</svelte-virtual-list-row>
 		{/each}
 	</svelte-virtual-list-contents>
 </svelte-virtual-list-viewport>
-
-<style>
-	svelte-virtual-list-viewport {
-		position: relative;
-		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
-		display: block;
-	}
-
-	svelte-virtual-list-contents,
-	svelte-virtual-list-row {
-		display: block;
-	}
-
-	svelte-virtual-list-row {
-		overflow: hidden;
-	}
-</style>

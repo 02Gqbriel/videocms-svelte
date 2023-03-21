@@ -3,8 +3,6 @@ import { get, writable } from 'svelte/store';
 import { url } from '../stores';
 import { token } from './auth';
 import { currentFolderID } from './folderTraversing';
-import { sha256 } from 'hash.js';
-import sjcl from 'sjcl';
 
 export interface Item {
 	ID: number;
@@ -29,21 +27,18 @@ export async function refreshItems() {
 }
 
 export async function listFolders(): Promise<Item[]> {
-	const res = await fetch(
-		`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`,
-		{
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-		}
-	);
+	const res = await fetch(`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`, {
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+	});
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map(v => ({
+		const items = json.map((v) => ({
 			...v,
 			Type: 'Folder' as 'Folder' | 'File',
 		}));
@@ -145,21 +140,18 @@ export async function deleteFolder(fileID: number) {
 }
 
 export async function listFiles(): Promise<Item[]> {
-	const res = await fetch(
-		`${url}/api/files?ParentFolderID=${get(currentFolderID)}`,
-		{
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-		}
-	);
+	const res = await fetch(`${url}/api/files?ParentFolderID=${get(currentFolderID)}`, {
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+	});
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map(v => ({
+		const items = json.map((v) => ({
 			...v,
 			Type: 'File' as 'Folder' | 'File',
 		}));
@@ -200,7 +192,7 @@ export async function uploadFile(file: File): Promise<boolean> {
 
 	const hash = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
 	const sha256 = Array.from(new Uint8Array(hash))
-		.map(b => b.toString(16).padStart(2, '0'))
+		.map((b) => b.toString(16).padStart(2, '0'))
 		.join('');
 
 	formData.append('Name', file.name);
