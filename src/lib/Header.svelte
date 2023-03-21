@@ -54,15 +54,16 @@
 			on:click={refreshItems}
 		>
 			<svg
+				style="animation-duration: 300ms; animation-direction: alternate; animation-timing-function: ease-in-out;"
+				class="fill-current w-4 h-4 active:animate-spin"
+				height="32"
+				id="refresh"
+				viewBox="0 0 32 32"
+				width="32"
 				xmlns="http://www.w3.org/2000/svg"
-				viewBox="0 0 20 20"
-				fill="currentColor"
-				class="w-5 h-5"
 			>
 				<path
-					fill-rule="evenodd"
-					d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
-					clip-rule="evenodd"
+					d=" M16 2 A14 14 0 0 0 2 16 A14 14 0 0 0 16 30 A14 14 0 0 0 26 26 L 23.25 23 A10 10 0 0 1 16 26 A10 10 0 0 1 6 16 A10 10 0 0 1 16 6 A10 10 0 0 1 23.25 9 L19 13 L30 13 L30 2 L26 6 A14 14 0 0 0 16 2 "
 				/>
 			</svg>
 		</button>

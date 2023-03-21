@@ -20,6 +20,10 @@ export const filesLoaded = writable<boolean>(false);
 
 export const files = writable<Item[]>([]);
 
+function trimName(name: string) {
+	return name.length > 10 ? name.substring(0, 10) + '...' : name;
+}
+
 export async function refreshItems() {
 	filesLoaded.set(false);
 	files.set([...(await listFolders()), ...(await listFiles())]);
@@ -51,30 +55,32 @@ export async function listFolders(): Promise<Item[]> {
 }
 
 export async function createFolder(name: string, parentFolderID: number) {
+	const foldername = trimName(name);
+
+	let loading = toast.loading(`Creating folder ${foldername}`);
+
 	const formData = new FormData();
 
 	formData.append('name', name);
 	formData.append('ParentFolderID', parentFolderID.toString());
 
-	const res = await toast.promise(
-		fetch(`${url}/api/folder`, {
-			method: 'POST',
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-			body: formData,
-		}),
-		{
-			loading: `Creating folder ${name}`,
-			error: `Folder ${name} couldn't be created`,
-			success: `Folder ${name} has been created successfully`,
-		}
-	);
+	const res = await fetch(`${url}/api/folder`, {
+		method: 'POST',
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+		body: formData,
+	});
+
+	toast.remove(loading);
 
 	if (res.ok) {
 		await refreshItems();
+		toast.success(`Folder ${foldername} has been created successfully`);
+	} else {
+		toast.error(`Folder ${foldername} couldn't be created`);
 	}
 
 	return res.ok;
@@ -85,60 +91,68 @@ export async function updateFolder(
 	parentFolderID: number,
 	name: string
 ) {
+	let foldername = trimName(name);
+
+	let loading = toast.loading(`Updating folder ${foldername}`);
+
 	const formData = new FormData();
 
 	formData.append('FolderID', folderID.toString());
 	formData.append('ParentFolderID', parentFolderID.toString());
 	formData.append('Name', name);
 
-	const res = await toast.promise(
-		fetch(`${url}/api/folder`, {
-			method: 'PUT',
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-			body: formData,
-		}),
-		{
-			loading: `Updated folder to ${name}`,
-			error: "Folder couldn't be updated",
-			success: `Folder updated to ${name} successfully`,
-		}
-	);
+	const res = await fetch(`${url}/api/folder`, {
+		method: 'PUT',
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+		body: formData,
+	});
+
+	toast.remove(loading);
 
 	if (res.ok) {
 		await refreshItems();
+		toast.success(`Folder updated to ${foldername} successfully`);
+	} else {
+		toast.error(`Folder ${foldername} couldn't be updated`);
 	}
 
 	return res.ok;
 }
 
-export async function deleteFolder(fileID: number) {
+export async function deleteFolder(
+	fileID: number,
+	name: string,
+	multi: boolean = false
+) {
+	const foldername = trimName(name);
+
+	let loading = toast.loading(`Deleting folder ${foldername}`);
+
 	const formData = new FormData();
 
 	formData.append('FolderID', fileID.toString());
 
-	const res = await toast.promise(
-		fetch(`${url}/api/folder`, {
-			method: 'DELETE',
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-			body: formData,
-		}),
-		{
-			success: `Folder has been deleted`,
-			loading: 'Deleting folder',
-			error: "Folder couldn't be deleted",
-		}
-	);
+	const res = await fetch(`${url}/api/folder`, {
+		method: 'DELETE',
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+		body: formData,
+	});
+
+	toast.remove(loading);
 
 	if (res.ok) {
-		await refreshItems();
+		if (!multi) await refreshItems();
+		toast.success(`Folder ${foldername} deleted successfully`);
+	} else {
+		toast.error(`Folder ${foldername} couldn't be deleted`);
 	}
 }
 
@@ -166,34 +180,44 @@ export async function listFiles(): Promise<Item[]> {
 	}
 }
 
-export async function deleteFile(folderID: number) {
+export async function deleteFile(
+	folderID: number,
+	name: string,
+	multi: boolean = false
+) {
+	const filename = trimName(name);
+
+	let loading = toast.loading(`Deleting file ${filename}`);
+
 	const formData = new FormData();
 
 	formData.append('LinkID', folderID.toString());
 
-	const res = await toast.promise(
-		fetch(`${url}/api/file`, {
-			method: 'DELETE',
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-			body: formData,
-		}),
-		{
-			success: `File has been deleted`,
-			loading: 'Deleting file',
-			error: "File couldn't be deleted",
-		}
-	);
+	const res = await fetch(`${url}/api/file`, {
+		method: 'DELETE',
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+		body: formData,
+	});
+
+	toast.remove(loading);
 
 	if (res.ok) {
-		await refreshItems();
+		if (!multi) await refreshItems();
+		toast.success(`File ${filename} has been deleted`);
+	} else {
+		toast.error(`File ${filename} couldn't be deleted`);
 	}
 }
 
 export async function uploadFile(file: File): Promise<boolean> {
+	const filename = trimName(file.name);
+
+	let loading = toast.loading(`Uploading file ${filename}`);
+
 	let formData = new FormData();
 
 	const hash = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
@@ -216,11 +240,9 @@ export async function uploadFile(file: File): Promise<boolean> {
 	});
 
 	if (exists.ok) {
-		toast.success(
-			`File  ${
-				file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name
-			} has been uploaded`
-		);
+		toast.remove(loading);
+
+		toast.success(`Existing File ${filename} has been copied`);
 
 		return exists.ok;
 	}
@@ -231,26 +253,23 @@ export async function uploadFile(file: File): Promise<boolean> {
 	formData.append('file', file);
 	formData.append('ParentFolderID', get(currentFolderID).toString());
 
-	const response = await toast.promise(
-		fetch(`${url}/api/file`, {
-			method: 'POST',
-			body: formData,
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-		}),
-		{
-			success: `File  ${
-				file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name
-			} has been uploaded`,
-			loading: 'Uploading file',
-			error: `File  ${
-				file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name
-			} couldn't be uploaded`,
-		}
-	);
+	const response = await fetch(`${url}/api/file`, {
+		method: 'POST',
+		body: formData,
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+	});
+
+	toast.remove(loading);
+
+	if (response.ok) {
+		toast.success(`File ${filename} has been uploaded successfully`);
+	} else {
+		toast.error(`File ${filename} couldn't be uploaded`);
+	}
 
 	return response.ok;
 }
@@ -260,31 +279,33 @@ export async function updateFile(
 	parentFolderID: number,
 	name: string
 ) {
+	const filename = trimName(name);
+
+	let loading = toast.loading(`Updating file ${filename}`);
+
 	const formData = new FormData();
 
 	formData.append('FolderID', linkID.toString());
 	formData.append('ParentFolderID', parentFolderID.toString());
 	formData.append('Name', name);
 
-	const res = await toast.promise(
-		fetch(`${url}/api/file`, {
-			method: 'PUT',
-			headers: {
-				Authorization: 'Basic ' + get(token),
-				'Access-Control-Allow-Headers': 'Authorization',
-				'Access-Control-Allow-Credentials': 'true',
-			},
-			body: formData,
-		}),
-		{
-			loading: `Updated folder to ${name}`,
-			error: "Folder couldn't be updated",
-			success: `Folder updated to ${name} successfully`,
-		}
-	);
+	const res = await fetch(`${url}/api/file`, {
+		method: 'PUT',
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+		},
+		body: formData,
+	});
+
+	toast.remove(loading);
 
 	if (res.ok) {
 		await refreshItems();
+		toast.success(`File ${filename} updated successfully`);
+	} else {
+		toast.error(`File ${filename} couldn't be updated`);
 	}
 
 	return res.ok;

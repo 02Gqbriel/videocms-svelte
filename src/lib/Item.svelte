@@ -7,7 +7,6 @@
 	import { enterFolder } from '../util/folderTraversing';
 	import { selected, selectItem, unselectItem } from '../util/selected';
 	import { url } from '../stores';
-	import { draggedItem, dragging } from '../util/moveFolder';
 
 	export let item: Item;
 
@@ -39,23 +38,17 @@
 	}
 </script>
 
-{#if $dragging && draggedItem.item == item}
-	{#await import('./DragItem.svelte') then { default: DragItem }}
-		<svelte:component this={DragItem} {item} />
-	{/await}
-{/if}
-
 <button
 	on:click={handleClick}
 	class="border-b group/item w-full flex items-center justify-between border-opacity-10
 	border-gray-600 cursor-pointer hover:bg-neutral-800/50"
 >
 	<div class="flex items-center  gap-2 p-3">
-		{#if $selected.some((e) => e.id === item.ID && e.type === item.Type)}
+		{#if $selected.some(e => e.id === item.ID && e.type === item.Type)}
 			<button
-				on:click={(e) => {
+				on:click={e => {
 					e.preventDefault();
-					unselectItem(item.ID, item.Type);
+					unselectItem(item.ID, item.Type, item.Name);
 				}}
 			>
 				<svg
@@ -73,9 +66,9 @@
 			</button>
 		{:else}
 			<button
-				on:click={(e) => {
+				on:click={e => {
 					e.preventDefault();
-					selectItem(item.ID, item.Type);
+					selectItem(item.ID, item.Type, item.Name);
 				}}
 			>
 				<svg
@@ -122,26 +115,28 @@
 				readonly={!rename}
 				value={item.Name}
 				bind:this={ref}
-				on:click={(e) => e.preventDefault()}
+				on:click={e => e.preventDefault()}
 				on:input={() => (ref.style.width = ref.value.length + 'ch')}
-				on:keydown={(e) => {
+				on:keydown={e => {
 					if (e.key === ' ') {
 						e.preventDefault();
 						ref.value += ' ';
 					}
 				}}
 				style="width: {item.Name.length + 'ch'};"
-				class="bg-neutral-900 group-hover/item:bg-neutral-800/0 z-10 active:outline-none focus:outline-none {rename
+				class="bg-neutral-900 group-hover/item:bg-neutral-800/0  active:outline-none focus:outline-none {rename
 					? ''
 					: 'pointer-events-none'}"
 			/>
 
 			{#if item.Type == 'Folder'}
 				{#if rename}
-					<div class="flex items-center gap-2 absolute -right-12 pl-2 opacity-90 p-1">
+					<div
+						class="flex items-center gap-2 absolute -right-12 pl-2 opacity-90 p-1"
+					>
 						<button
 							type="submit"
-							on:click={(e) => {
+							on:click={e => {
 								e.preventDefault;
 								handleRename(e);
 							}}
@@ -162,7 +157,7 @@
 						</button>
 
 						<button
-							on:click={async (e) => {
+							on:click={async e => {
 								e.preventDefault();
 								rename = false;
 								ref.value = item.Name;
@@ -184,7 +179,7 @@
 				{:else}
 					<button
 						type="button"
-						on:click={(e) => {
+						on:click={e => {
 							e.preventDefault();
 							rename = true;
 							ref.focus();
@@ -210,7 +205,9 @@
 
 	<div class="flex items-center justify-end w-96 px-3 mr-2">
 		<span
-			title="This {item.Type.toLowerCase()} was created {dayjs(item.CreatedAt).fromNow()}"
+			title="This {item.Type.toLowerCase()} was created {dayjs(
+				item.CreatedAt
+			).fromNow()}"
 		>
 			{dayjs(item.CreatedAt).fromNow()}
 		</span>

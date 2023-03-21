@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { updateFile, updateFolder, type Item } from '../util/files';
+	import { get } from 'svelte/store';
+	import {
+		contents,
+		dragenter,
+		dragleave,
+		dragstart,
+		drop,
+	} from '../util/dragndrop';
+	import type { Item } from '../util/files';
 
 	// props
 	export let items: Item[];
@@ -15,7 +23,7 @@
 	let height_map = [];
 	let rows: HTMLCollectionOf<HTMLElement>;
 	let viewport: HTMLElement;
-	let contents: HTMLElement & { children: HTMLCollectionOf<HTMLElement> };
+
 	let viewport_height = 0;
 	let visible: { index: number; data: Item }[];
 	let mounted: boolean;
@@ -125,64 +133,12 @@
 	}
 
 	onMount(() => {
-		rows = contents.getElementsByTagName(
+		rows = get(contents).getElementsByTagName(
 			'svelte-virtual-list-row'
 		) as HTMLCollectionOf<HTMLElement>;
+
 		mounted = true;
 	});
-
-	let dragging = false;
-	let dragedItem: Item;
-
-	$: console.log(dragging);
-
-	function dragstart(ev: DragEvent, item: Item) {
-		dragging = true;
-
-		dragedItem = item;
-	}
-
-	function drop(ev: DragEvent, item: Item) {
-		ev.preventDefault();
-		hover = undefined;
-		dragleave();
-
-		dragging = false;
-		if (dragedItem && dragedItem !== item) {
-			console.log(item.ID, dragedItem.ID);
-
-			if (dragedItem.Type == 'File') {
-				updateFile(dragedItem.ID, item.ID, dragedItem.Name);
-			} else {
-				updateFolder(dragedItem.ID, item.ID, dragedItem.Name);
-			}
-		}
-	}
-
-	let hover: number;
-
-	function dragenter(ev: DragEvent, i: number, item: Item) {
-		hover = i;
-
-		const el = contents.children[i];
-
-		if (item.Type == 'File') {
-			ev.preventDefault();
-			el.classList.add('not-allowed-item');
-		} else {
-			el.classList.add('active-item');
-		}
-	}
-
-	function dragleave() {
-		const arr = [...contents.children];
-
-		for (let j = 0; j < arr.length; j++) {
-			if (j == hover) continue;
-			arr[j].classList.remove('active-item');
-			arr[j].classList.remove('not-allowed-item');
-		}
-	}
 </script>
 
 <svelte-virtual-list-viewport
@@ -197,14 +153,14 @@
 		"
 >
 	<svelte-virtual-list-contents
-		bind:this={contents}
+		bind:this={$contents}
 		style="padding-top: {top}px; padding-bottom: {bottom}px; display: block;"
 	>
 		{#each visible as row, i (row.index)}
 			<svelte-virtual-list-row
 				draggable="true"
-				on:dragleave={dragleave}
-				on:dragenter={ev => dragenter(ev, i, row.data)}
+				on:dragleave={() => dragleave()}
+				on:dragenter={() => dragenter(i, row.data)}
 				on:dragover={ev => ev.preventDefault()}
 				on:drop={ev => drop(ev, row.data)}
 				on:dragstart={ev => dragstart(ev, row.data)}
@@ -232,7 +188,7 @@
 		height: 100%;
 		background-color: #262626;
 		opacity: 0.2;
-		z-index: 100;
+		z-index: 0;
 	}
 
 	:global(.not-allowed-item) {
@@ -248,6 +204,6 @@
 		height: 100%;
 		background-color: #b91c1c;
 		opacity: 0.05;
-		z-index: 100;
+		z-index: 0;
 	}
 </style>

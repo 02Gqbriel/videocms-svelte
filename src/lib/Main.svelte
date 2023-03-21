@@ -9,6 +9,8 @@
 	import { refreshAuth, token, tokenExp } from '../util/auth';
 	import { selected, selectItem, unselectItem } from '../util/selected';
 	import { confirmation, fileUpload, newFolder } from '../stores';
+	import HeaderSkeleton from './HeaderSkeleton.svelte';
+	import ListSkeleton from './ListSkeleton.svelte';
 
 	let innerHeight: number;
 
@@ -38,17 +40,7 @@
 {/if}
 
 {#await import('./Header.svelte')}
-	<header class="w-screen flex justify-between items-center p-3 px-3">
-		<div class="w-11 h-11 animate-pulse rounded bg-neutral-800" />
-
-		<div class="flex gap-2">
-			<div class="w-[32px] h-[32px] rounded animate-pulse bg-neutral-800" />
-
-			<div class="w-[100px] h-[32px] rounded animate-pulse bg-neutral-800" />
-
-			<div class="w-[100px] h-[32px] rounded animate-pulse bg-neutral-800" />
-		</div>
-	</header>
+	<HeaderSkeleton />
 {:then { default: Header }}
 	<svelte:component this={Header} />
 {/await}
@@ -64,7 +56,7 @@
 						e.preventDefault();
 
 						for (const file of get(files)) {
-							unselectItem(file.ID, file.Type);
+							unselectItem(file.ID, file.Type, file.Name);
 						}
 					}}
 				>
@@ -89,7 +81,7 @@
 						e.preventDefault();
 
 						for (const file of get(files)) {
-							selectItem(file.ID, file.Type);
+							selectItem(file.ID, file.Type, file.Name);
 						}
 					}}
 				>
@@ -152,29 +144,6 @@
 			<ListItem {item} />
 		</VirtualList>
 	{:else}
-		<div>
-			{#each [0, 0, 0, 0] as _}
-				<div
-					class="h-[50px] border-b border-opacity-10 border-gray-600 w-full flex items-center justify-between"
-				>
-					<div class="flex items-center">
-						<div
-							class="h-[20px] m-3 aspect-square animate-pulse bg-neutral-800 w-min rounded"
-						/>
-						<div
-							class="h-[20px] m-2 aspect-square animate-pulse bg-neutral-800 w-min rounded"
-						/>
-
-						<div
-							class="h-[24px] m-2.5 w-[200px] animate-pulse bg-neutral-800 rounded"
-						/>
-					</div>
-
-					<div
-						class="h-[24px] m-2.5 w-[200px] animate-pulse bg-neutral-800 rounded"
-					/>
-				</div>
-			{/each}
-		</div>
+		<ListSkeleton />
 	{/if}
 </div>

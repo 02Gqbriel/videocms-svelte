@@ -4,9 +4,19 @@
 	import { fileUpload } from '../stores';
 	import { onMount } from 'svelte';
 
+	const base64Store = localforage.createInstance({
+		name: 'video-cms-base64',
+		driver: [localforage.INDEXEDDB, localforage.WEBSQL],
+	});
+
+	const blobUrlStore = localforage.createInstance({
+		name: 'video-cms-blob-url',
+		driver: [localforage.INDEXEDDB, localforage.WEBSQL],
+	});
+
 	onMount(async () => {
 		await new Promise((res, rej) => {
-			localforage.ready((err) => {
+			localforage.ready(err => {
 				if (err) {
 					rej(err);
 				}
@@ -14,23 +24,33 @@
 				res({} as any);
 			});
 		});
-
-		localforage.config({
-			name: 'video-cms',
-			driver: [localforage.INDEXEDDB, localforage.WEBSQL],
-		});
 	});
 
 	let files: File[];
 	let loading: boolean = false;
 
 	async function extractFramesFromVideo(file: File) {
-		return new Promise<string>(async (resolve) => {
-			const result = await localforage.getItem<string>(file.name);
+		return new Promise<string>(async resolve => {
+			const hash = await crypto.subtle.digest(
+				'SHA-256',
+				await file.arrayBuffer()
+			);
+			const sha256 = Array.from(new Uint8Array(hash))
+				.map(b => b.toString(16).padStart(2, '0'))
+				.join('');
+
+			const result = await base64Store.getItem<string>(sha256);
 
 			if (result !== null) resolve(result);
 
-			let videoObjectUrl = URL.createObjectURL(file);
+			let videoObjectUrl = await blobUrlStore.getItem<string>(sha256);
+
+			if (videoObjectUrl == null) {
+				videoObjectUrl = URL.createObjectURL(file);
+
+				await blobUrlStore.setItem(sha256, videoObjectUrl);
+			}
+
 			let video = document.createElement('video');
 
 			let seekResolve;
@@ -45,23 +65,24 @@
 				(video.duration === Infinity || isNaN(video.duration)) &&
 				video.readyState < 2
 			) {
-				await new Promise((r) => setTimeout(r, 1000));
+				await new Promise(r => setTimeout(r, 1000));
 				video.currentTime = 10000000 * Math.random();
 			}
 
 			let canvas = document.createElement('canvas');
 			let context = canvas.getContext('2d');
 			let [w, h] = [video.videoWidth, video.videoHeight];
+
 			canvas.width = w;
 			canvas.height = h;
 
 			video.currentTime = 0;
-			await new Promise((r) => (seekResolve = r));
+			await new Promise(r => (seekResolve = r));
 
 			context.drawImage(video, 0, 0, w, h);
-			let base64ImageData = canvas.toDataURL('image/webp', 0.1);
+			let base64ImageData = canvas.toDataURL('image/jpeg', 0.05);
 
-			await localforage.setItem(file.name, base64ImageData);
+			await base64Store.setItem(sha256, base64ImageData);
 
 			resolve(base64ImageData);
 		});
@@ -85,7 +106,9 @@
 		}
 	}
 
-	function handleInput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+	function handleInput(
+		e: Event & { currentTarget: EventTarget & HTMLInputElement }
+	) {
 		files = [...e.currentTarget.files];
 	}
 </script>
@@ -105,7 +128,10 @@
 			multiple
 			class="absolute left-0 top-0 h-full w-full max-h-[370px] appearance-none opacity-0 cursor-pointer"
 		/>
-		<button class="absolute top-0 right-0 m-5" on:click={(_) => fileUpload.set(false)}>
+		<button
+			class="absolute top-0 right-0 m-5"
+			on:click={_ => fileUpload.set(false)}
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
@@ -158,7 +184,9 @@
 			</button>
 
 			{#if files != undefined}
-				<span class="w-full h-[0.5px] border border-separate border-neutral-800 px-5" />
+				<span
+					class="w-full h-[0.5px] border border-separate border-neutral-800 px-5"
+				/>
 
 				<div
 					id="image_container"
@@ -184,8 +212,8 @@
 								/>
 								<button
 									class="absolute top-0 left-0 p-2 w-full bg-gradient-to-b from-neutral-800/90 to-neutral-50/5"
-									on:click={(_) => {
-										files = files.filter((e) => e != file);
+									on:click={_ => {
+										files = files.filter(e => e != file);
 									}}
 								>
 									<svg
