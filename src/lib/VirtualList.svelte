@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import type { Item } from '../util/files';
+	import { updateFile, updateFolder, type Item } from '../util/files';
 
 	// props
 	export let items: Item[];
@@ -14,8 +14,8 @@
 	// local state
 	let height_map = [];
 	let rows: HTMLCollectionOf<HTMLElement>;
-	let viewport;
-	let contents: HTMLElement;
+	let viewport: HTMLElement;
+	let contents: HTMLElement & { children: HTMLCollectionOf<HTMLElement> };
 	let viewport_height = 0;
 	let visible: { index: number; data: Item }[];
 	let mounted: boolean;
@@ -29,9 +29,13 @@
 	});
 
 	// whenever `items` changes, invalidate the current heightmap
-	$: if (mounted) refresh(items, viewport_height, itemHeight);
+	$: mounted && refresh(items, viewport_height, itemHeight);
 
-	async function refresh(items: Item[], viewport_height: number, itemHeight: number) {
+	async function refresh(
+		items: Item[],
+		viewport_height: number,
+		itemHeight: number
+	) {
 		const { scrollTop } = viewport;
 
 		await tick(); // wait until the DOM is up to date
@@ -102,7 +106,6 @@
 		while (i < items.length) height_map[i++] = average_height;
 		bottom = remaining * average_height;
 
-		// prevent jumping if we scrolled up into unknown territory
 		if (start < old_start) {
 			await tick();
 
@@ -119,21 +122,67 @@
 			const d = actual_height - expected_height;
 			viewport.scrollTo(0, scrollTop + d);
 		}
-
-		// TODO if we overestimated the space these
-		// rows would occupy we may need to add some
-		// more. maybe we can just call handle_scroll again?
 	}
 
-	// trigger initial refresh
 	onMount(() => {
 		rows = contents.getElementsByTagName(
 			'svelte-virtual-list-row'
 		) as HTMLCollectionOf<HTMLElement>;
 		mounted = true;
-
-		console.log(contents, rows);
 	});
+
+	let dragging = false;
+	let dragedItem: Item;
+
+	$: console.log(dragging);
+
+	function dragstart(ev: DragEvent, item: Item) {
+		dragging = true;
+
+		dragedItem = item;
+	}
+
+	function drop(ev: DragEvent, item: Item) {
+		ev.preventDefault();
+		hover = undefined;
+		dragleave();
+
+		dragging = false;
+		if (dragedItem && dragedItem !== item) {
+			console.log(item.ID, dragedItem.ID);
+
+			if (dragedItem.Type == 'File') {
+				updateFile(dragedItem.ID, item.ID, dragedItem.Name);
+			} else {
+				updateFolder(dragedItem.ID, item.ID, dragedItem.Name);
+			}
+		}
+	}
+
+	let hover: number;
+
+	function dragenter(ev: DragEvent, i: number, item: Item) {
+		hover = i;
+
+		const el = contents.children[i];
+
+		if (item.Type == 'File') {
+			ev.preventDefault();
+			el.classList.add('not-allowed-item');
+		} else {
+			el.classList.add('active-item');
+		}
+	}
+
+	function dragleave() {
+		const arr = [...contents.children];
+
+		for (let j = 0; j < arr.length; j++) {
+			if (j == hover) continue;
+			arr[j].classList.remove('active-item');
+			arr[j].classList.remove('not-allowed-item');
+		}
+	}
 </script>
 
 <svelte-virtual-list-viewport
@@ -151,10 +200,54 @@
 		bind:this={contents}
 		style="padding-top: {top}px; padding-bottom: {bottom}px; display: block;"
 	>
-		{#each visible as row (row.index)}
-			<svelte-virtual-list-row style="display: block; overflow: hidden;">
+		{#each visible as row, i (row.index)}
+			<svelte-virtual-list-row
+				draggable="true"
+				on:dragleave={dragleave}
+				on:dragenter={ev => dragenter(ev, i, row.data)}
+				on:dragover={ev => ev.preventDefault()}
+				on:drop={ev => drop(ev, row.data)}
+				on:dragstart={ev => dragstart(ev, row.data)}
+				style="display: block; overflow: hidden;"
+			>
 				<slot item={row.data}>Missing template</slot>
 			</svelte-virtual-list-row>
 		{/each}
 	</svelte-virtual-list-contents>
 </svelte-virtual-list-viewport>
+
+<style>
+	:global(.active-item) {
+		position: relative;
+		text-decoration: underline;
+	}
+
+	:global(.active-item)::after {
+		cursor: grab !important;
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: #262626;
+		opacity: 0.2;
+		z-index: 100;
+	}
+
+	:global(.not-allowed-item) {
+		position: relative;
+	}
+
+	:global(.not-allowed-item)::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: #b91c1c;
+		opacity: 0.05;
+		z-index: 100;
+	}
+</style>

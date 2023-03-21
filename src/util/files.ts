@@ -27,18 +27,21 @@ export async function refreshItems() {
 }
 
 export async function listFolders(): Promise<Item[]> {
-	const res = await fetch(`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`, {
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-	});
+	const res = await fetch(
+		`${url}/api/folders?ParentFolderID=${get(currentFolderID)}`,
+		{
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+		}
+	);
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map((v) => ({
+		const items = json.map(v => ({
 			...v,
 			Type: 'Folder' as 'Folder' | 'File',
 		}));
@@ -89,7 +92,7 @@ export async function updateFolder(
 	formData.append('Name', name);
 
 	const res = await toast.promise(
-		fetch(`${url}/api/file`, {
+		fetch(`${url}/api/folder`, {
 			method: 'PUT',
 			headers: {
 				Authorization: 'Basic ' + get(token),
@@ -99,9 +102,9 @@ export async function updateFolder(
 			body: formData,
 		}),
 		{
-			loading: `Renamed folder to ${name}`,
-			error: "Folder couldn't be renamed",
-			success: `Folder renamed to ${name} successfully`,
+			loading: `Updated folder to ${name}`,
+			error: "Folder couldn't be updated",
+			success: `Folder updated to ${name} successfully`,
 		}
 	);
 
@@ -140,18 +143,21 @@ export async function deleteFolder(fileID: number) {
 }
 
 export async function listFiles(): Promise<Item[]> {
-	const res = await fetch(`${url}/api/files?ParentFolderID=${get(currentFolderID)}`, {
-		headers: {
-			Authorization: 'Basic ' + get(token),
-			'Access-Control-Allow-Headers': 'Authorization',
-			'Access-Control-Allow-Credentials': 'true',
-		},
-	});
+	const res = await fetch(
+		`${url}/api/files?ParentFolderID=${get(currentFolderID)}`,
+		{
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+		}
+	);
 
 	if (res.ok) {
 		const json = (await res.json()) as Item[];
 
-		const items = json.map((v) => ({
+		const items = json.map(v => ({
 			...v,
 			Type: 'File' as 'Folder' | 'File',
 		}));
@@ -192,7 +198,7 @@ export async function uploadFile(file: File): Promise<boolean> {
 
 	const hash = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
 	const sha256 = Array.from(new Uint8Array(hash))
-		.map((b) => b.toString(16).padStart(2, '0'))
+		.map(b => b.toString(16).padStart(2, '0'))
 		.join('');
 
 	formData.append('Name', file.name);
@@ -247,4 +253,39 @@ export async function uploadFile(file: File): Promise<boolean> {
 	);
 
 	return response.ok;
+}
+
+export async function updateFile(
+	linkID: number,
+	parentFolderID: number,
+	name: string
+) {
+	const formData = new FormData();
+
+	formData.append('FolderID', linkID.toString());
+	formData.append('ParentFolderID', parentFolderID.toString());
+	formData.append('Name', name);
+
+	const res = await toast.promise(
+		fetch(`${url}/api/file`, {
+			method: 'PUT',
+			headers: {
+				Authorization: 'Basic ' + get(token),
+				'Access-Control-Allow-Headers': 'Authorization',
+				'Access-Control-Allow-Credentials': 'true',
+			},
+			body: formData,
+		}),
+		{
+			loading: `Updated folder to ${name}`,
+			error: "Folder couldn't be updated",
+			success: `Folder updated to ${name} successfully`,
+		}
+	);
+
+	if (res.ok) {
+		await refreshItems();
+	}
+
+	return res.ok;
 }
