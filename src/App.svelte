@@ -2,7 +2,7 @@
 	import { Toaster } from 'svelte-french-toast';
 	import { checkAuth, token } from './util/auth';
 	//@ts-ignore
-	import image from './assets/logo.png?w=500&quality=90&format=webp';
+	import image from './assets/logo.png?w=500&quality=15&format=avif';
 </script>
 
 <Toaster
