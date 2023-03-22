@@ -1,13 +1,7 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import { get } from 'svelte/store';
-	import {
-		contents,
-		dragenter,
-		dragleave,
-		dragstart,
-		drop,
-	} from '../util/dragndrop';
+	import { contents, dragenter, dragstart, drop } from '../util/dragndrop';
 	import type { Item } from '../util/files';
 
 	// props
@@ -156,13 +150,12 @@
 		bind:this={$contents}
 		style="padding-top: {top}px; padding-bottom: {bottom}px; display: block;"
 	>
-		{#each visible as row, i (row.index)}
+		{#each visible as row (row.index)}
 			<svelte-virtual-list-row
 				draggable="true"
-				on:dragleave={() => dragleave()}
-				on:dragenter={() => dragenter(i, row.data)}
+				on:dragenter={dragenter}
 				on:dragover={ev => ev.preventDefault()}
-				on:drop={ev => drop(ev, row.data)}
+				on:drop={ev => drop(ev, row.data.ID, row.data.Type)}
 				on:dragstart={ev => dragstart(ev, row.data)}
 				style="display: block; overflow: hidden;"
 			>

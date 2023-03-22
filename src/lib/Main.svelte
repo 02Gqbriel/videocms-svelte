@@ -5,12 +5,17 @@
 	import VirtualList from './VirtualList.svelte';
 	import { files, filesLoaded, refreshItems } from '../util/files';
 	import { default as ListItem } from './Item.svelte';
-	import { currentFolderID, leaveFolder } from '../util/folderTraversing';
+	import {
+		currentFolderID,
+		leaveFolder,
+		prevFolder,
+	} from '../util/folderTraversing';
 	import { refreshAuth, token, tokenExp } from '../util/auth';
 	import { selected, selectItem, unselectItem } from '../util/selected';
 	import { confirmation, fileUpload, newFolder } from '../stores';
 	import HeaderSkeleton from './HeaderSkeleton.svelte';
 	import ListSkeleton from './ListSkeleton.svelte';
+	import { drop } from '../util/dragndrop';
 
 	let innerHeight: number;
 
@@ -106,6 +111,8 @@
 				? 'Already in root folder'
 				: 'Return to Parentfolder'}
 			disabled={$currentFolderID == 0}
+			on:drop={ev => drop(ev, prevFolder() ?? -1, 'Folder')}
+			on:dragover={ev => !ev.currentTarget.disabled && ev.preventDefault()}
 			on:click={() => $currentFolderID > 0 && leaveFolder() && selected.set([])}
 			class=" py-3 h-full  flex-grow flex items-center gap-2 {$currentFolderID ==
 			0

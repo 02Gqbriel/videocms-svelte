@@ -3,7 +3,7 @@ import { refreshItems } from './files';
 
 export const currentFolderID = writable<number>(0);
 
-const history = [];
+const history: number[] = [];
 
 export async function enterFolder(ID: number) {
 	history.push(get(currentFolderID));
@@ -19,4 +19,8 @@ export async function leaveFolder() {
 	history.pop();
 
 	await refreshItems();
+}
+
+export function prevFolder(): number {
+	return history[history.length - 1];
 }
