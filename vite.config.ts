@@ -8,11 +8,19 @@ import eslint from 'vite-plugin-eslint';
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [
-		svelte({}),
+		svelte({
+			compilerOptions: {
+				enableSourcemap: true,
+			},
+		}),
 		imagetools({}),
 		chunkSplitPlugin({ strategy: 'unbundle' }),
 		viteCompression({ algorithm: 'brotliCompress' }),
 		viteCompression({ algorithm: 'gzip' }),
 		eslint(),
 	],
+
+	build: {
+		minify: 'terser',
+	},
 });

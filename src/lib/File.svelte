@@ -1,29 +1,15 @@
 <script lang="ts" async="true">
 	import { refreshItems, uploadFile } from '../util/files';
-	import localforage from 'localforage';
 	import { fileUpload } from '../stores';
 	import { onMount } from 'svelte';
+	import { Database, LocalStorageDriver } from '../util/localestorage';
 
-	const base64Store = localforage.createInstance({
-		name: 'video-cms-base64',
-		driver: [localforage.INDEXEDDB, localforage.WEBSQL],
-	});
+	let blobStore: Database;
+	let base64Store: Database;
 
-	const blobUrlStore = localforage.createInstance({
-		name: 'video-cms-blob-url',
-		driver: [localforage.INDEXEDDB, localforage.WEBSQL],
-	});
-
-	onMount(async () => {
-		await new Promise((res, rej) => {
-			localforage.ready(err => {
-				if (err) {
-					rej(err);
-				}
-
-				res({} as any);
-			});
-		});
+	onMount(() => {
+		blobStore = new Database(new LocalStorageDriver());
+		base64Store = new Database(new LocalStorageDriver());
 	});
 
 	let files: File[];
@@ -39,16 +25,16 @@
 				.map(b => b.toString(16).padStart(2, '0'))
 				.join('');
 
-			const result = await base64Store.getItem<string>(sha256);
+			const result = base64Store.get<string>(sha256);
 
 			if (result !== null) resolve(result);
 
-			let videoObjectUrl = await blobUrlStore.getItem<string>(sha256);
+			let videoObjectUrl = blobStore.get<string>(sha256);
 
-			if (videoObjectUrl == null) {
+			if (videoObjectUrl === null) {
 				videoObjectUrl = URL.createObjectURL(file);
 
-				await blobUrlStore.setItem(sha256, videoObjectUrl);
+				blobStore.set(sha256, videoObjectUrl);
 			}
 
 			let video = document.createElement('video');
@@ -82,7 +68,7 @@
 			context.drawImage(video, 0, 0, w, h);
 			let base64ImageData = canvas.toDataURL('image/jpeg', 0.05);
 
-			await base64Store.setItem(sha256, base64ImageData);
+			base64Store.set(sha256, base64ImageData);
 
 			resolve(base64ImageData);
 		});

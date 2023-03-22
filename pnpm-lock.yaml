@@ -14,7 +14,6 @@ specifiers:
   dayjs: ^1.11.7
   eslint: ^8.36.0
   eslint-plugin-svelte: ^2.21.0
-  localforage: ^1.10.0
   npm-run-all: ^4.1.5
   postcss: ^8.4.21
   raf-throttle: ^2.0.6
@@ -23,6 +22,7 @@ specifiers:
   svelte-french-toast: ^1.0.3
   svelte-gestures: ^1.4.1
   tailwindcss: ^3.2.7
+  terser: ^5.16.6
   tslib: ^2.5.0
   typescript: ^4.9.5
   vite: ^4.1.4
@@ -33,7 +33,6 @@ specifiers:
 
 dependencies:
   dayjs: 1.11.7
-  localforage: 1.10.0
   raf-throttle: 2.0.6
   svelte-french-toast: 1.0.3_svelte@3.56.0
   svelte-gestures: 1.4.1
@@ -56,9 +55,10 @@ devDependencies:
   svelte: 3.56.0
   svelte-check: 2.10.3_bhcwx4nkvjpo6ndxq2hdyzqm2m
   tailwindcss: 3.2.7_postcss@8.4.21
+  terser: 5.16.6
   tslib: 2.5.0
   typescript: 4.9.5
-  vite: 4.1.4_@types+node@18.15.1
+  vite: 4.1.4_bjg37ymzt76yduyyt3qrmm63qi
   vite-imagetools: 4.0.18
   vite-plugin-chunk-split: 0.4.7_vite@4.1.4
   vite-plugin-compression: 0.5.1_vite@4.1.4
@@ -565,6 +565,13 @@ packages:
     engines: {node: '>=6.0.0'}
     dev: true
 
+  /@jridgewell/source-map/0.3.2:
+    resolution: {integrity: sha512-m7O9o2uR8k2ObDysZYzdfhb08VuEml5oWGiosa1VdaPZ/A6QyPkAJuwN0Q1lhULOf6B7MtQmHENS743hWtCrgw==}
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.2
+      '@jridgewell/trace-mapping': 0.3.17
+    dev: true
+
   /@jridgewell/sourcemap-codec/1.4.14:
     resolution: {integrity: sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==}
     dev: true
@@ -638,7 +645,7 @@ packages:
       magic-string: 0.29.0
       svelte: 3.56.0
       svelte-hmr: 0.15.1_svelte@3.56.0
-      vite: 4.1.4_@types+node@18.15.1
+      vite: 4.1.4_bjg37ymzt76yduyyt3qrmm63qi
       vitefu: 0.2.4_vite@4.1.4
     transitivePeerDependencies:
       - supports-color
@@ -1022,6 +1029,10 @@ packages:
     resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
     dev: true
 
+  /buffer-from/1.1.2:
+    resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
+    dev: true
+
   /buffer/5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
     dependencies:
@@ -1120,6 +1131,10 @@ packages:
     dependencies:
       color-convert: 2.0.1
       color-string: 1.9.1
+    dev: true
+
+  /commander/2.20.3:
+    resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
     dev: true
 
   /concat-map/0.0.1:
@@ -1807,10 +1822,6 @@ packages:
       sharp: 0.31.3
     dev: true
 
-  /immediate/3.0.6:
-    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
-    dev: false
-
   /immutable/4.3.0:
     resolution: {integrity: sha512-0AOCmOip+xgJwEVTQj1EfiDDOkPmuyllDuTuEX+DDXUgapLAsBIfkg3sxCYyCEA8mQqZrrxPUGjcOQ2JS3WLkg==}
     dev: true
@@ -2054,12 +2065,6 @@ packages:
       type-check: 0.4.0
     dev: true
 
-  /lie/3.1.1:
-    resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
-    dependencies:
-      immediate: 3.0.6
-    dev: false
-
   /lilconfig/2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
@@ -2074,12 +2079,6 @@ packages:
       pify: 3.0.0
       strip-bom: 3.0.0
     dev: true
-
-  /localforage/1.10.0:
-    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
-    dependencies:
-      lie: 3.1.1
-    dev: false
 
   /locate-path/6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
@@ -2765,6 +2764,18 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /source-map-support/0.5.21:
+    resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
+    dependencies:
+      buffer-from: 1.1.2
+      source-map: 0.6.1
+    dev: true
+
+  /source-map/0.6.1:
+    resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
   /sourcemap-codec/1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
     deprecated: Please use @jridgewell/sourcemap-codec instead
@@ -3063,6 +3074,17 @@ packages:
       readable-stream: 3.6.2
     dev: true
 
+  /terser/5.16.6:
+    resolution: {integrity: sha512-IBZ+ZQIA9sMaXmRZCUMDjNH0D5AQQfdn4WUjHL0+1lF4TP1IHRJbrhb6fNaXWikrYQTSkb7SLxkeXAiy1p7mbg==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      '@jridgewell/source-map': 0.3.2
+      acorn: 8.8.2
+      commander: 2.20.3
+      source-map-support: 0.5.21
+    dev: true
+
   /text-table/0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
@@ -3188,7 +3210,7 @@ packages:
     dependencies:
       es-module-lexer: 1.2.0
       magic-string: 0.26.7
-      vite: 4.1.4_@types+node@18.15.1
+      vite: 4.1.4_bjg37ymzt76yduyyt3qrmm63qi
     dev: true
 
   /vite-plugin-compression/0.5.1_vite@4.1.4:
@@ -3199,7 +3221,7 @@ packages:
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 10.1.0
-      vite: 4.1.4_@types+node@18.15.1
+      vite: 4.1.4_bjg37ymzt76yduyyt3qrmm63qi
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -3214,10 +3236,10 @@ packages:
       '@types/eslint': 8.21.1
       eslint: 8.36.0
       rollup: 2.79.1
-      vite: 4.1.4_@types+node@18.15.1
+      vite: 4.1.4_bjg37ymzt76yduyyt3qrmm63qi
     dev: true
 
-  /vite/4.1.4_@types+node@18.15.1:
+  /vite/4.1.4_bjg37ymzt76yduyyt3qrmm63qi:
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -3247,6 +3269,7 @@ packages:
       postcss: 8.4.21
       resolve: 1.22.1
       rollup: 3.19.1
+      terser: 5.16.6
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
@@ -3259,7 +3282,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.1.4_@types+node@18.15.1
+      vite: 4.1.4_bjg37ymzt76yduyyt3qrmm63qi
     dev: true
 
   /which-boxed-primitive/1.0.2:

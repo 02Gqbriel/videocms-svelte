@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { refreshItems } from '../util/files';
 	//@ts-ignore
-	import image from '../assets/logo.png?w=30;40;100&quality=100&format=webp;jpg&picture';
+	import image from '../assets/logo.png?w=30;40;100&quality=60&format=avif;webp;jpg&picture';
 	import { selected } from '../util/selected';
 	import { confirmation, fileUpload, newFolder } from '../stores';
 
