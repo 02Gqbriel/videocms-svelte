@@ -285,7 +285,7 @@ export async function updateFile(
 
 	const formData = new FormData();
 
-	formData.append('FolderID', linkID.toString());
+	formData.append('LinkID', linkID.toString());
 	formData.append('ParentFolderID', parentFolderID.toString());
 	formData.append('Name', name);
 
