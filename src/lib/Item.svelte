@@ -7,6 +7,7 @@
 	import { enterFolder } from '../util/folderTraversing';
 	import { selected, selectItem, unselectItem } from '../util/selected';
 	import { url } from '../stores';
+	import { currentFileInfo, isFileInfoOpen } from '../util/moreInfo';
 
 	export let item: Item;
 
@@ -36,17 +37,25 @@
 			window.open(`${url}/${item.UUID}`, '_blank');
 		}
 	}
+
+	let isSelected: boolean = false;
+
+	selected.subscribe((v) => {
+		isSelected = v.some((e) => e.id === item.ID && e.type === item.Type);
+	});
 </script>
 
 <button
 	on:click={handleClick}
 	class="border-b group/item w-full flex items-center justify-between border-opacity-10
-	border-gray-600 cursor-pointer hover:bg-neutral-800/50"
+	border-gray-600 cursor-pointer hover:bg-neutral-800/30 {isSelected
+		? '!bg-neutral-800/50'
+		: ''}"
 >
 	<div class="flex items-center  gap-2 p-3">
-		{#if $selected.some(e => e.id === item.ID && e.type === item.Type)}
+		{#if $selected.some((e) => e.id === item.ID && e.type === item.Type)}
 			<button
-				on:click={e => {
+				on:click={(e) => {
 					e.preventDefault();
 					unselectItem(item.ID, item.Type, item.Name);
 				}}
@@ -66,7 +75,7 @@
 			</button>
 		{:else}
 			<button
-				on:click={e => {
+				on:click={(e) => {
 					e.preventDefault();
 					selectItem(item.ID, item.Type, item.Name);
 				}}
@@ -115,28 +124,26 @@
 				readonly={!rename}
 				value={item.Name}
 				bind:this={ref}
-				on:click={e => e.preventDefault()}
+				on:click={(e) => e.preventDefault()}
 				on:input={() => (ref.style.width = ref.value.length + 'ch')}
-				on:keydown={e => {
+				on:keydown={(e) => {
 					if (e.key === ' ') {
 						e.preventDefault();
 						ref.value += ' ';
 					}
 				}}
 				style="width: {item.Name.length + 'ch'};"
-				class="bg-neutral-900 group-hover/item:bg-neutral-800/0  active:outline-none focus:outline-none {rename
+				class="bg-transparent group-hover/item:bg-neutral-800/0  active:outline-none focus:outline-none {rename
 					? ''
 					: 'pointer-events-none'}"
 			/>
 
 			{#if item.Type == 'Folder'}
 				{#if rename}
-					<div
-						class="flex items-center gap-2 absolute -right-12 pl-2 opacity-90 p-1"
-					>
+					<div class="flex items-center gap-2 absolute -right-12 pl-2 opacity-90 p-1">
 						<button
 							type="submit"
-							on:click={e => {
+							on:click={(e) => {
 								e.preventDefault;
 								handleRename(e);
 							}}
@@ -157,7 +164,7 @@
 						</button>
 
 						<button
-							on:click={async e => {
+							on:click={async (e) => {
 								e.preventDefault();
 								rename = false;
 								ref.value = item.Name;
@@ -179,7 +186,7 @@
 				{:else}
 					<button
 						type="button"
-						on:click={e => {
+						on:click={(e) => {
 							e.preventDefault();
 							rename = true;
 							ref.focus();
@@ -203,13 +210,36 @@
 		</form>
 	</div>
 
-	<div class="flex items-center justify-end w-96 px-3 mr-2">
-		<span
-			title="This {item.Type.toLowerCase()} was created {dayjs(
-				item.CreatedAt
-			).fromNow()}"
+	<div class="flex mr-2 px-3 gap-3">
+		<div class="flex items-center justify-end w-96 mr-2">
+			<span
+				title="This {item.Type.toLowerCase()} was created {dayjs(
+					item.CreatedAt
+				).fromNow()}"
+			>
+				{dayjs(item.CreatedAt).fromNow()}
+			</span>
+		</div>
+
+		<button
+			disabled={item.Type == 'Folder'}
+			on:click={(ev) => {
+				ev.preventDefault();
+				isFileInfoOpen.set(true);
+				currentFileInfo.set(item.ID);
+			}}
+			class="hover:bg-neutral-800 p-1.5 rounded"
 		>
-			{dayjs(item.CreatedAt).fromNow()}
-		</span>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 20 20"
+				fill="currentColor"
+				class="w-5 h-5 {item.Type == 'Folder' && 'invisible'}"
+			>
+				<path
+					d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z"
+				/>
+			</svg>
+		</button>
 	</div>
 </button>

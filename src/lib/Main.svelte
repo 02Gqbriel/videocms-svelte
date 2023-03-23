@@ -3,19 +3,16 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import VirtualList from './VirtualList.svelte';
-	import { files, filesLoaded, refreshItems } from '../util/files';
+	import { files, filesLoaded, getFile, refreshItems } from '../util/files';
 	import { default as ListItem } from './Item.svelte';
-	import {
-		currentFolderID,
-		leaveFolder,
-		prevFolder,
-	} from '../util/folderTraversing';
+	import { currentFolderID, leaveFolder, prevFolder } from '../util/folderTraversing';
 	import { refreshAuth, token, tokenExp } from '../util/auth';
 	import { selected, selectItem, unselectItem } from '../util/selected';
 	import { confirmation, fileUpload, newFolder } from '../stores';
 	import HeaderSkeleton from './HeaderSkeleton.svelte';
 	import ListSkeleton from './ListSkeleton.svelte';
 	import { drop } from '../util/dragndrop';
+	import { currentFileInfo, isFileInfoOpen } from '../util/moreInfo';
 
 	let innerHeight: number;
 
@@ -57,7 +54,7 @@
 		<div title="Select all" class="pl-3 pr-2.5 h-full flex items-center">
 			{#if $selected.length === $files.length && $files.length > 0}
 				<button
-					on:click={e => {
+					on:click={(e) => {
 						e.preventDefault();
 
 						for (const file of get(files)) {
@@ -82,7 +79,7 @@
 				<button
 					disabled={$files.length == 0}
 					class="disabled:cursor-not-allowed"
-					on:click={e => {
+					on:click={(e) => {
 						e.preventDefault();
 
 						for (const file of get(files)) {
@@ -107,15 +104,12 @@
 		</div>
 		<button
 			id="return"
-			title={$currentFolderID == 0
-				? 'Already in root folder'
-				: 'Return to Parentfolder'}
+			title={$currentFolderID == 0 ? 'Already in root folder' : 'Return to Parentfolder'}
 			disabled={$currentFolderID == 0}
-			on:drop={ev => drop(ev, prevFolder() ?? -1, 'Folder')}
-			on:dragover={ev => !ev.currentTarget.disabled && ev.preventDefault()}
+			on:drop={(ev) => drop(ev, prevFolder() ?? -1, 'Folder')}
+			on:dragover={(ev) => !ev.currentTarget.disabled && ev.preventDefault()}
 			on:click={() => $currentFolderID > 0 && leaveFolder() && selected.set([])}
-			class=" py-3 h-full  flex-grow flex items-center gap-2 {$currentFolderID ==
-			0
+			class=" py-3 h-full  flex-grow flex items-center gap-2 {$currentFolderID == 0
 				? 'opacity-40 cursor-not-allowed'
 				: ''}"
 		>
@@ -143,13 +137,25 @@
 	{/if}
 
 	{#if $filesLoaded}
-		<VirtualList
-			height={innerHeight - ($newFolder ? 168 : 117) + 'px'}
-			items={$files}
-			let:item
-		>
-			<ListItem {item} />
-		</VirtualList>
+		<div class="flex">
+			<div class="flex-grow">
+				<VirtualList
+					height={innerHeight - ($newFolder ? 168 : 117) + 'px'}
+					items={$files}
+					let:item
+				>
+					<ListItem {item} />
+				</VirtualList>
+			</div>
+
+			{#if $isFileInfoOpen}
+				{#await import('./MoreInfo.svelte') then { default: MoreInfo }}
+					{#await getFile($currentFileInfo) then data}
+						<svelte:component this={MoreInfo} fileInfo={data} />
+					{/await}
+				{/await}
+			{/if}
+		</div>
 	{:else}
 		<ListSkeleton />
 	{/if}
