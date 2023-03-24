@@ -16,9 +16,15 @@
 				/>
 			</div>
 
-			<div
-				class="h-[24px] m-2.5 w-[200px] animate-pulse bg-neutral-800 rounded"
-			/>
+			<div class="flex mr-2">
+				<div
+					class="h-[24px] m-2.5 w-[150px] animate-pulse bg-neutral-800 rounded"
+				/>
+
+				<div
+					class="h-[20px] m-2 aspect-square animate-pulse bg-neutral-800 rounded"
+				/>
+			</div>
 		</div>
 	{/each}
 </div>

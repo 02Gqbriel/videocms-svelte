@@ -2,7 +2,7 @@
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 
-	import { updateFolder } from '../util/files';
+	import { updateFile, updateFolder } from '../util/files';
 	import type { Item } from '../util/files';
 	import { enterFolder } from '../util/folderTraversing';
 	import { selected, selectItem, unselectItem } from '../util/selected';
@@ -17,7 +17,9 @@
 	async function handleRename(e: Event) {
 		e.preventDefault();
 
-		const success = await updateFolder(item.ID, item.ParentFolderID, ref.value);
+		const success = await (item.Type == 'Folder'
+			? updateFolder(item.ID, item.ParentFolderID, ref.value)
+			: updateFile(item.ID, item.ParentFolderID, ref.value));
 
 		if (success) {
 			rename = false;
@@ -40,8 +42,8 @@
 
 	let isSelected: boolean = false;
 
-	selected.subscribe((v) => {
-		isSelected = v.some((e) => e.id === item.ID && e.type === item.Type);
+	selected.subscribe(v => {
+		isSelected = v.some(e => e.id === item.ID && e.type === item.Type);
 	});
 </script>
 
@@ -53,9 +55,9 @@
 		: ''}"
 >
 	<div class="flex items-center  gap-2 p-3">
-		{#if $selected.some((e) => e.id === item.ID && e.type === item.Type)}
+		{#if $selected.some(e => e.id === item.ID && e.type === item.Type)}
 			<button
-				on:click={(e) => {
+				on:click={e => {
 					e.preventDefault();
 					unselectItem(item.ID, item.Type, item.Name);
 				}}
@@ -75,7 +77,7 @@
 			</button>
 		{:else}
 			<button
-				on:click={(e) => {
+				on:click={e => {
 					e.preventDefault();
 					selectItem(item.ID, item.Type, item.Name);
 				}}
@@ -119,127 +121,143 @@
 			</svg>
 		{/if}
 
-		<form on:submit={handleRename} class="flex relative items-center gap-2">
+		<form
+			on:submit={handleRename}
+			class="flex relative items-center gap-2 w-max"
+		>
 			<input
 				readonly={!rename}
 				value={item.Name}
 				bind:this={ref}
-				on:click={(e) => e.preventDefault()}
-				on:input={() => (ref.style.width = ref.value.length + 'ch')}
-				on:keydown={(e) => {
+				on:click={e => e.preventDefault()}
+				on:keydown={e => {
 					if (e.key === ' ') {
 						e.preventDefault();
-						ref.value += ' ';
 					}
+
+					ref.value += e.key;
 				}}
-				style="width: {item.Name.length + 'ch'};"
-				class="bg-transparent group-hover/item:bg-neutral-800/0  active:outline-none focus:outline-none {rename
+				class="bg-transparent opacity-0 z-20 absolute left-0 top-0 right-0 bottom-0  {rename
 					? ''
 					: 'pointer-events-none'}"
 			/>
 
-			{#if item.Type == 'Folder'}
-				{#if rename}
-					<div class="flex items-center gap-2 absolute -right-12 pl-2 opacity-90 p-1">
-						<button
-							type="submit"
-							on:click={(e) => {
-								e.preventDefault;
-								handleRename(e);
-							}}
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								class="rename w-4 h-4"
-							>
-								<path
-									class="rename"
-									fill-rule="evenodd"
-									d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</button>
+			{#if ref !== undefined}
+				<span>{ref.value}</span>
+			{/if}
 
-						<button
-							on:click={async (e) => {
-								e.preventDefault();
-								rename = false;
-								ref.value = item.Name;
-								ref.style.width = ref.value.length + 'ch';
-							}}
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								class="w-5 h-5"
-							>
-								<path
-									d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
-								/>
-							</svg>
-						</button>
-					</div>
-				{:else}
+			{#if rename}
+				<div
+					class="flex items-center gap-2 absolute left-full pl-2 opacity-90 p-1"
+				>
 					<button
-						type="button"
-						on:click={(e) => {
-							e.preventDefault();
-							rename = true;
-							ref.focus();
+						type="submit"
+						on:click={e => {
+							e.preventDefault;
+							handleRename(e);
 						}}
-						title="Rename {item.Type}"
-						class="absolute opacity-0 right-0 group-hover/item:-right-6 pl-2 group-hover/item:opacity-90 transition-all p-1"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
 							fill="currentColor"
-							class="w-4 h-4"
+							class="rename w-4 h-4"
 						>
 							<path
-								d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"
+								class="rename"
+								fill-rule="evenodd"
+								d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+								clip-rule="evenodd"
 							/>
 						</svg>
 					</button>
-				{/if}
+
+					<button
+						on:click={async e => {
+							e.preventDefault();
+							rename = false;
+							ref.value = item.Name;
+						}}
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 20 20"
+							fill="currentColor"
+							class="w-5 h-5"
+						>
+							<path
+								d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
+							/>
+						</svg>
+					</button>
+				</div>
+			{:else}
+				<button
+					type="button"
+					on:click={e => {
+						e.preventDefault();
+						rename = true;
+						ref.focus();
+					}}
+					title="Rename {item.Type}"
+					class="absolute opacity-0 right-0 group-hover/item:-right-6 pl-2 group-hover/item:opacity-90 transition-all p-1"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 20 20"
+						fill="currentColor"
+						class="w-4 h-4"
+					>
+						<path
+							d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"
+						/>
+					</svg>
+				</button>
 			{/if}
 		</form>
 	</div>
 
 	<div class="flex mr-2 px-3 gap-3">
-		<div class="flex items-center justify-end w-96 mr-2">
-			<span
-				title="This {item.Type.toLowerCase()} was created {dayjs(
-					item.CreatedAt
-				).fromNow()}"
-			>
-				{dayjs(item.CreatedAt).fromNow()}
-			</span>
-		</div>
+		{#if !$isFileInfoOpen}
+			<div class="flex items-center justify-end  mr-2">
+				<span
+					title="This {item.Type.toLowerCase()} was created {dayjs(
+						item.CreatedAt
+					).fromNow()}"
+				>
+					{dayjs(item.CreatedAt).fromNow()}
+				</span>
+			</div>
+		{/if}
 
 		<button
 			disabled={item.Type == 'Folder'}
-			on:click={(ev) => {
+			on:click={ev => {
 				ev.preventDefault();
 				isFileInfoOpen.set(true);
 				currentFileInfo.set(item.ID);
 			}}
-			class="hover:bg-neutral-800 p-1.5 rounded"
+			class="enabled:hover:bg-neutral-800 p-1 rounded group/info {item.ID ===
+				$currentFileInfo && 'cursor-not-allowed'}"
 		>
 			<svg
+				baseProfile="tiny"
+				height="24px"
+				id="Layer_1"
+				version="1.2"
+				viewBox="0 0 24 24"
+				width="24px"
+				class="w-6 h-6 opacity-75 fill-current {item.Type == 'Folder' &&
+					'invisible'}"
+				xml:space="preserve"
 				xmlns="http://www.w3.org/2000/svg"
-				viewBox="0 0 20 20"
-				fill="currentColor"
-				class="w-5 h-5 {item.Type == 'Folder' && 'invisible'}"
+				xmlns:xlink="http://www.w3.org/1999/xlink"
+				><g
+					><path
+						d="M13.839,17.525c-0.006,0.002-0.559,0.186-1.039,0.186c-0.265,0-0.372-0.055-0.406-0.079c-0.168-0.117-0.48-0.336,0.054-1.4   l1-1.994c0.593-1.184,0.681-2.329,0.245-3.225c-0.356-0.733-1.039-1.236-1.92-1.416C11.456,9.532,11.134,9.5,10.815,9.5   c-1.849,0-3.094,1.08-3.146,1.126c-0.179,0.158-0.221,0.42-0.102,0.626c0.12,0.206,0.367,0.3,0.595,0.222   c0.005-0.002,0.559-0.187,1.039-0.187c0.263,0,0.369,0.055,0.402,0.078c0.169,0.118,0.482,0.34-0.051,1.402l-1,1.995   c-0.594,1.185-0.681,2.33-0.245,3.225c0.356,0.733,1.038,1.236,1.921,1.416c0.314,0.063,0.636,0.097,0.954,0.097   c1.85,0,3.096-1.08,3.148-1.126c0.179-0.157,0.221-0.42,0.102-0.626C14.312,17.543,14.063,17.451,13.839,17.525z"
+					/><circle cx="13" cy="6.001" r="2.5" /></g
+				></svg
 			>
-				<path
-					d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z"
-				/>
-			</svg>
 		</button>
 	</div>
 </button>

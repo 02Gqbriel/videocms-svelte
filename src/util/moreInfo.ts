@@ -31,3 +31,8 @@ interface Subtitles {
 export const currentFileInfo = writable<number>();
 
 export const isFileInfoOpen = writable<boolean>(false);
+
+export function closeFileInfo() {
+	isFileInfoOpen.set(false);
+	currentFileInfo.set(undefined);
+}
