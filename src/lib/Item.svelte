@@ -200,7 +200,7 @@
 						ref.focus();
 					}}
 					title="Rename {item.Type}"
-					class="absolute opacity-0 right-0 group-hover/item:-right-6 pl-2 group-hover/item:opacity-90 transition-all p-1"
+					class="absolute opacity-0 left-[80%] group-hover/item:left-full pl-2 group-hover/item:opacity-90 transition-all p-1"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

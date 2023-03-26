@@ -15,8 +15,6 @@
 		const ms = Math.round(duration * 1000);
 		const sec = Math.round(ms / 1000);
 
-		console.log(sec);
-
 		if (sec < 60) {
 			return `0:${sec % 60 < 10 ? '0' + (sec % 60) : sec % 60}`;
 		}
@@ -81,7 +79,7 @@
 		</svg>
 	</button>
 
-	<h1 class="text-xl mr-4">
+	<h1 class="text-lg pr-16 truncate">
 		{fileInfo.Name}
 	</h1>
 

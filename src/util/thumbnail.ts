@@ -1,7 +1,6 @@
-import { Database, LocalStorageDriver } from './localestorage';
+import { LocalStorageDriver } from './localestorage';
 
-export let blobStore = new Database(new LocalStorageDriver());
-export let base64Store = new Database(new LocalStorageDriver());
+export let base64Store = new LocalStorageDriver();
 
 export async function extractFrameFromVideo(file: File) {
 	return new Promise<string>(async resolve => {
@@ -13,17 +12,11 @@ export async function extractFrameFromVideo(file: File) {
 			.map(b => b.toString(16).padStart(2, '0'))
 			.join('');
 
-		const result = base64Store.get<string>(sha256);
+		const result = base64Store.getItem(sha256);
 
 		if (result !== null) resolve(result);
 
-		let videoObjectUrl = blobStore.get<string>(sha256);
-
-		if (videoObjectUrl === null) {
-			videoObjectUrl = URL.createObjectURL(file);
-
-			blobStore.set(sha256, videoObjectUrl);
-		}
+		let videoObjectUrl = URL.createObjectURL(file);
 
 		let video = document.createElement('video');
 
@@ -54,9 +47,9 @@ export async function extractFrameFromVideo(file: File) {
 		await new Promise(r => (seekResolve = r));
 
 		context.drawImage(video, 0, 0, w, h);
-		let base64ImageData = canvas.toDataURL('image/jpeg', 0.05);
+		let base64ImageData = canvas.toDataURL('image/webp', 0.075);
 
-		base64Store.set(sha256, base64ImageData);
+		base64Store.setItem(sha256, base64ImageData);
 
 		resolve(base64ImageData);
 	});

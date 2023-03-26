@@ -69,14 +69,14 @@
 		</button>
 
 		<button
-			class="flex items-center gap-2  px-3 py-1.5 rounded hover:bg-neutral-800/50"
+			class="flex items-center gap-2  px-3 py-1 rounded hover:bg-neutral-800/50"
 			on:click={() => newFolder.set(true)}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
 				fill="currentColor"
-				class="w-5 h-5"
+				class="w-4 h-4"
 			>
 				<path
 					fill-rule="evenodd"
@@ -88,13 +88,13 @@
 		</button>
 		<button
 			on:click={() => fileUpload.set(true)}
-			class="flex items-center gap-2 ml-1 bg-blue-700 px-3 py-1.5  rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
+			class="flex items-center gap-2 ml-1 bg-blue-700 px-3 py-1  rounded hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-500"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
 				fill="currentColor"
-				class="w-5 h-5"
+				class="w-4 h-4"
 			>
 				<path
 					fill-rule="evenodd"
@@ -114,7 +114,7 @@
 					confirmation.set(true);
 				}}
 				title="Delete selected items"
-				class="flex items-center gap-2 ml-1 bg-red-700 px-3 py-1.5 mr-2 rounded hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-500"
+				class="flex items-center gap-2 ml-1 bg-red-700 px-3 py-1 mr-2 rounded hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-500"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"

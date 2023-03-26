@@ -28,30 +28,3 @@ export class LocalStorageDriver implements StorageDriver {
 		this.storage.clear();
 	}
 }
-
-export class Database {
-	private storageDriver: StorageDriver;
-
-	constructor(storageDriver: StorageDriver) {
-		this.storageDriver = storageDriver;
-	}
-
-	get<T>(key: string): T | null {
-		const data = this.storageDriver.getItem(key);
-
-		return data ? <T>JSON.parse(data) : null;
-	}
-
-	set(key: string, value: any): void {
-		const data = JSON.stringify(value);
-		this.storageDriver.setItem(key, data);
-	}
-
-	remove(key: string): void {
-		this.storageDriver.removeItem(key);
-	}
-
-	clear(): void {
-		this.storageDriver.clear();
-	}
-}

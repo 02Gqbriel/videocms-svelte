@@ -5,7 +5,7 @@ module.exports = {
 	content: ['./index.html', './src/**/*.{js,ts,svelte}'],
 	theme: {
 		fontFamily: {
-			sans: ["'Outfit'", ...fontFamily.sans],
+			sans: ["'Ubuntu'", ...fontFamily.sans],
 		},
 		extend: {},
 	},

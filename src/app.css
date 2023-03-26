@@ -21,6 +21,10 @@
 	* {
 		scrollbar-width: thin;
 		scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+		font-weight: 500;
+		font-synthesis: none;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	}
 
 	*::-webkit-scrollbar-track {

@@ -135,7 +135,7 @@ export async function deleteFolder(
 
 	const foldername = trimName(name);
 
-	let loading = toast.loading(`Deleting folder ${foldername}`);
+	let loading = !multi && toast.loading(`Deleting folder ${foldername}`);
 
 	const formData = new FormData();
 
@@ -151,13 +151,15 @@ export async function deleteFolder(
 		body: formData,
 	});
 
-	toast.remove(loading);
+	!multi && toast.remove(loading);
 
-	if (res.ok) {
-		if (!multi) await refreshItems();
-		toast.success(`Folder ${foldername} deleted successfully`);
-	} else {
-		toast.error(`Folder ${foldername} couldn't be deleted`);
+	if (!multi) {
+		if (res.ok) {
+			await refreshItems();
+			toast.success(`Folder ${foldername} deleted successfully`);
+		} else {
+			toast.error(`Folder ${foldername} couldn't be deleted`);
+		}
 	}
 }
 
@@ -214,7 +216,7 @@ export async function deleteFile(
 
 	const filename = trimName(name);
 
-	let loading = toast.loading(`Deleting file ${filename}`);
+	let loading = !multi && toast.loading(`Deleting file ${filename}`);
 
 	const formData = new FormData();
 
@@ -230,13 +232,15 @@ export async function deleteFile(
 		body: formData,
 	});
 
-	toast.remove(loading);
+	!multi && toast.remove(loading);
 
-	if (res.ok) {
-		if (!multi) await refreshItems();
-		toast.success(`File ${filename} has been deleted`);
-	} else {
-		toast.error(`File ${filename} couldn't be deleted`);
+	if (!multi) {
+		if (res.ok) {
+			await refreshItems();
+			toast.success(`File ${filename} has been deleted`);
+		} else {
+			toast.error(`File ${filename} couldn't be deleted`);
+		}
 	}
 }
 

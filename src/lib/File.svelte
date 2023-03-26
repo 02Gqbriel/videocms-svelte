@@ -3,7 +3,15 @@
 	import { fileUpload } from '../stores';
 	import { extractFrameFromVideo } from '../util/thumbnail';
 
-	let files: File[];
+	interface FilePreviewList {
+		file: File;
+		sha256: string;
+		uri: string | null;
+	}
+
+	let files: FilePreviewList[] = [];
+
+	let filesSHA256: string[] = [];
 	let loading: boolean = false;
 
 	async function uploadFiles(e: SubmitEvent) {
@@ -13,7 +21,7 @@
 		let succes = true;
 
 		for (const file of files) {
-			succes = succes && (await uploadFile(file));
+			succes = succes && (await uploadFile(file.file));
 		}
 
 		loading = false;
@@ -24,10 +32,28 @@
 		}
 	}
 
-	function handleInput(
+	async function handleInput(
 		e: Event & { currentTarget: EventTarget & HTMLInputElement }
 	) {
-		files = [...e.currentTarget.files];
+		for (const file of [...e.currentTarget.files]) {
+			const hash = await crypto.subtle.digest(
+				'SHA-256',
+				await file.arrayBuffer()
+			);
+			const sha256 = Array.from(new Uint8Array(hash))
+				.map(b => b.toString(16).padStart(2, '0'))
+				.join('');
+
+			if (!filesSHA256.includes(sha256)) {
+				let index = files.length;
+				files = [...files, { file, sha256, uri: null }];
+				filesSHA256.push(sha256);
+
+				extractFrameFromVideo(file).then(v => {
+					files[index].uri = v;
+				});
+			}
+		}
 	}
 </script>
 
@@ -101,7 +127,7 @@
 				</svg>
 			</button>
 
-			{#if files != undefined}
+			{#if files.length > 0}
 				<span
 					class="w-full h-[0.5px] border border-separate border-neutral-800 px-5"
 				/>
@@ -110,20 +136,19 @@
 					id="image_container"
 					class="flex gap-x-2 flex-wrap justify-between max-h-96 overflow-scroll"
 				>
-					{#each files as file}
-						{#await extractFrameFromVideo(file)}
+					{#each files as { file, uri, sha256 } (sha256)}
+						{#if uri === null}
 							<div
 								class="w-[49%] aspect-video animate-pulse bg-neutral-700 overflow-hidden my-2 rounded-lg flex"
 							>
 								<span class="p-2 flex-grow">{file.name}</span>
-							</div>
-						{:then result}
+							</div>{:else}
 							<div
 								class="relative group/video w-[49%] cursor-pointer aspect-video overflow-hidden my-2 rounded-lg"
 							>
 								<img
 									class="aspect-video"
-									src={result}
+									src={uri}
 									alt=""
 									decoding="async"
 									loading="lazy"
@@ -131,7 +156,8 @@
 								<button
 									class="absolute top-0 left-0 p-2 w-full bg-gradient-to-b from-neutral-800/90 to-neutral-50/5"
 									on:click={_ => {
-										files = files.filter(e => e != file);
+										files = files.filter(e => e.file != file);
+										filesSHA256.filter(v => v != sha256);
 									}}
 								>
 									<svg
@@ -152,8 +178,7 @@
 								>
 									{file.name}
 								</span>
-							</div>
-						{/await}
+							</div>{/if}
 					{/each}
 				</div>
 
