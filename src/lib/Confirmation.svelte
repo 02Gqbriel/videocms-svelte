@@ -22,12 +22,13 @@
 			unselectItem(item.id, item.type, item.name);
 		}
 
-		if (folders.length > 1) {
-			deleteFolders(folders.map(v => v.id));
-		} else {
-			deleteFolder(folders[0].id, folders[0].name);
+		if (folders.length > 0) {
+			if (folders.length > 1) {
+				deleteFolders(folders.map(v => v.id));
+			} else {
+				deleteFolder(folders[0].id, folders[0].name);
+			}
 		}
-
 		await refreshItems();
 
 		confirmation.set(false);
