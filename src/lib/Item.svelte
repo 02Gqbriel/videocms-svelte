@@ -13,6 +13,7 @@
 
 	let rename = false;
 	let ref: HTMLInputElement;
+	let value: string = item.Name;
 
 	async function handleRename(e: Event) {
 		e.preventDefault();
@@ -42,8 +43,8 @@
 
 	let isSelected: boolean = false;
 
-	selected.subscribe(v => {
-		isSelected = v.some(e => e.id === item.ID && e.type === item.Type);
+	selected.subscribe((v) => {
+		isSelected = v.some((e) => e.id === item.ID && e.type === item.Type);
 	});
 </script>
 
@@ -55,9 +56,9 @@
 		: ''}"
 >
 	<div class="flex items-center  gap-2 p-3">
-		{#if $selected.some(e => e.id === item.ID && e.type === item.Type)}
+		{#if $selected.some((e) => e.id === item.ID && e.type === item.Type)}
 			<button
-				on:click={e => {
+				on:click={(e) => {
 					e.preventDefault();
 					unselectItem(item.ID, item.Type, item.Name);
 				}}
@@ -77,7 +78,7 @@
 			</button>
 		{:else}
 			<button
-				on:click={e => {
+				on:click={(e) => {
 					e.preventDefault();
 					selectItem(item.ID, item.Type, item.Name);
 				}}
@@ -121,21 +122,16 @@
 			</svg>
 		{/if}
 
-		<form
-			on:submit={handleRename}
-			class="flex relative items-center gap-2 w-max"
-		>
+		<form on:submit={handleRename} class="flex relative items-center gap-2 w-max">
 			<input
 				readonly={!rename}
-				value={item.Name}
 				bind:this={ref}
-				on:click={e => e.preventDefault()}
-				on:keydown={e => {
+				bind:value
+				on:click={(e) => e.preventDefault()}
+				on:keydown={(e) => {
 					if (e.key === ' ') {
 						e.preventDefault();
 					}
-
-					ref.value += e.key;
 				}}
 				class="bg-transparent opacity-0 z-20 absolute left-0 top-0 right-0 bottom-0  {rename
 					? ''
@@ -147,12 +143,10 @@
 			{/if}
 
 			{#if rename}
-				<div
-					class="flex items-center gap-2 absolute left-full pl-2 opacity-90 p-1"
-				>
+				<div class="flex items-center gap-2 absolute left-full pl-2 opacity-90 p-1">
 					<button
 						type="submit"
-						on:click={e => {
+						on:click={(e) => {
 							e.preventDefault;
 							handleRename(e);
 						}}
@@ -173,7 +167,7 @@
 					</button>
 
 					<button
-						on:click={async e => {
+						on:click={async (e) => {
 							e.preventDefault();
 							rename = false;
 							ref.value = item.Name;
@@ -194,7 +188,7 @@
 			{:else}
 				<button
 					type="button"
-					on:click={e => {
+					on:click={(e) => {
 						e.preventDefault();
 						rename = true;
 						ref.focus();
@@ -232,7 +226,7 @@
 
 		<button
 			disabled={item.Type == 'Folder'}
-			on:click={ev => {
+			on:click={(ev) => {
 				ev.preventDefault();
 				isFileInfoOpen.set(true);
 				currentFileInfo.set(item.ID);
@@ -247,8 +241,7 @@
 				version="1.2"
 				viewBox="0 0 24 24"
 				width="24px"
-				class="w-6 h-6 opacity-75 fill-current {item.Type == 'Folder' &&
-					'invisible'}"
+				class="w-6 h-6 opacity-75 fill-current {item.Type == 'Folder' && 'invisible'}"
 				xml:space="preserve"
 				xmlns="http://www.w3.org/2000/svg"
 				xmlns:xlink="http://www.w3.org/1999/xlink"
