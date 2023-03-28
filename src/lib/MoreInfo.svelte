@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { closeFileInfo, currentFileInfo, type FileInfo } from '../util/moreInfo';
+	import {
+		closeFileInfo,
+		currentFileInfo,
+		type FileInfo,
+	} from '../util/moreInfo';
 	import placeholder from '../assets/placeholder.png';
 	import dayjs from 'dayjs';
 	import { getFile } from '../util/files';
@@ -86,7 +90,9 @@
 	<div class="flex flex-col gap-2">
 		<div class="flex">
 			<span class="flex-1">Size:</span>
-			<span class="flex-1 font-light">{Math.round(fileInfo.Size / 10000) / 100} MB</span>
+			<span class="flex-1 font-light"
+				>{Math.round(fileInfo.Size / 10000) / 100} MB</span
+			>
 		</div>
 
 		<div class="flex">
@@ -97,7 +103,7 @@
 		</div>
 
 		<div class="flex">
-			<span class="flex-1">Created at:</span>
+			<span class="flex-1">Created:</span>
 			<span class="flex-1 flex flex-col font-light">
 				{dayjs(fileInfo.CreatedAt).fromNow()}
 				<span class="text-xs font-thin">({fileInfo.CreatedAt})</span>
@@ -105,7 +111,7 @@
 		</div>
 
 		<div class="flex">
-			<span class="flex-1">Last updated at:</span>
+			<span class="flex-1">Last updated:</span>
 			<span class="flex-1 flex flex-col font-light">
 				{dayjs(fileInfo.UpdatedAt).fromNow()}
 				<span class="text-xs font-thin">({fileInfo.UpdatedAt})</span>
@@ -114,7 +120,9 @@
 
 		<div class="flex flex-col gap-2">
 			<span class="flex-1">Qualities:</span>
-			<div class="flex divide-y divide-opacity-20 divide-neutral-800 flex-col flex-wrap">
+			<div
+				class="flex divide-y divide-opacity-20 divide-neutral-800 flex-col flex-wrap"
+			>
 				{#each qualities as quality}
 					<div class="px-1 py-1 flex flex-col gap-2 ">
 						<div class="flex justify-between items-center">
@@ -128,7 +136,7 @@
 								</p>
 
 								<p class="text-xs flex justify-end font-extralight w-[9.5ch]">
-									{quality.Height}x{quality.Width}
+									{quality.Width}x{quality.Height}
 								</p>
 
 								<div>
@@ -192,7 +200,9 @@
 		{#if subtitles !== null}
 			<div class="flex flex-col gap-2">
 				<span class="flex-1">Subtitles:</span>
-				<div class="flex divide-opacity-20 divide-neutral-800 justify-between  flex-wrap">
+				<div
+					class="flex divide-opacity-20 divide-neutral-800 justify-between  flex-wrap"
+				>
 					{#each subtitles as subtitle}
 						<div class="px-1 py-1 flex flex-col gap-2 w-[49%]">
 							<div class="flex justify-between items-center">

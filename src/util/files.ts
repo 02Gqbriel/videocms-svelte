@@ -126,20 +126,16 @@ export async function updateFolder(
 	return res.ok;
 }
 
-export async function deleteFolder(
-	fileID: number,
-	name: string,
-	multi: boolean = false
-) {
+export async function deleteFolder(folderID: number, name: string) {
 	closeFileInfo();
 
 	const foldername = trimName(name);
 
-	let loading = !multi && toast.loading(`Deleting folder ${foldername}`);
+	let loading = toast.loading(`Deleting folder ${foldername}`);
 
 	const formData = new FormData();
 
-	formData.append('FolderID', fileID.toString());
+	formData.append('FolderID', folderID.toString());
 
 	const res = await fetch(`${url}/api/folder`, {
 		method: 'DELETE',
@@ -151,15 +147,41 @@ export async function deleteFolder(
 		body: formData,
 	});
 
-	!multi && toast.remove(loading);
+	toast.remove(loading);
 
-	if (!multi) {
-		if (res.ok) {
-			await refreshItems();
-			toast.success(`Folder ${foldername} deleted successfully`);
-		} else {
-			toast.error(`Folder ${foldername} couldn't be deleted`);
-		}
+	if (res.ok) {
+		await refreshItems();
+		toast.success(`Folder ${foldername} deleted successfully`);
+	} else {
+		toast.error(`Folder ${foldername} couldn't be deleted`);
+	}
+}
+
+export async function deleteFolders(folderIDs: number[]) {
+	closeFileInfo();
+
+	let loading = toast.loading(`Deleting ${folderIDs.length} folders`);
+
+	const json = { FolderIDs: [...folderIDs.map(v => ({ FolderID: v }))] };
+
+	const res = await fetch(`${url}/api/folders`, {
+		method: 'DELETE',
+		headers: {
+			Authorization: 'Basic ' + get(token),
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(json),
+	});
+
+	toast.remove(loading);
+
+	if (res.ok) {
+		await refreshItems();
+		toast.success(`${folderIDs.length} Folders deleted successfully`);
+	} else {
+		toast.error(`Folders couldn't be deleted`);
 	}
 }
 

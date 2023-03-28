@@ -1,18 +1,31 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
 	import { confirmation } from '../stores';
-	import { deleteFile, deleteFolder, refreshItems } from '../util/files';
+	import {
+		deleteFile,
+		deleteFolder,
+		deleteFolders,
+		refreshItems,
+	} from '../util/files';
 	import { selected, unselectItem } from '../util/selected';
 
 	async function deleteItems() {
+		const folders: { name: string; id: number }[] = [];
+
 		for (const item of get(selected)) {
 			if (item.type == 'Folder') {
-				await deleteFolder(item.id, item.name, get(selected).length > 1);
+				folders.push({ name: item.name, id: item.id });
 			} else {
 				await deleteFile(item.id, item.name, get(selected).length > 1);
 			}
 
 			unselectItem(item.id, item.type, item.name);
+		}
+
+		if (folders.length > 1) {
+			deleteFolders(folders.map(v => v.id));
+		} else {
+			deleteFolder(folders[0].id, folders[0].name);
 		}
 
 		await refreshItems();
