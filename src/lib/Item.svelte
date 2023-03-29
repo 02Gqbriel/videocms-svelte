@@ -124,7 +124,8 @@
 
 		<form
 			on:submit={handleRename}
-			class="flex relative items-center gap-2 w-max"
+			class="flex relative items-center gap-2 p-1 w-max {rename &&
+				'border-b border-blue-700 border-opacity-50'}"
 		>
 			<input
 				readonly={!rename}
@@ -135,8 +136,13 @@
 					if (e.key === ' ') {
 						e.preventDefault();
 					}
+
+					if (e.key === 'Enter') {
+						e.preventDefault();
+						handleRename(e);
+					}
 				}}
-				class="bg-transparent  z-10 absolute left-0 top-0 right-0 bottom-0 focus-within:outline-none  {rename
+				class="bg-transparent flex-grow w-full  z-10 absolute  top-0 -translate-y-[-22.5%] right-0 left-0  focus-within:outline-none  {rename
 					? ''
 					: 'pointer-events-none'}"
 			/>
@@ -152,7 +158,7 @@
 					<button
 						type="submit"
 						on:click={e => {
-							e.preventDefault;
+							e.preventDefault();
 							handleRename(e);
 						}}
 					>
