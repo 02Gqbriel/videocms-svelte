@@ -136,7 +136,7 @@
 						e.preventDefault();
 					}
 				}}
-				class="bg-transparent  z-20 absolute left-0 top-0 right-0 bottom-0 focus-within:outline-none  {rename
+				class="bg-transparent  z-10 absolute left-0 top-0 right-0 bottom-0 focus-within:outline-none  {rename
 					? ''
 					: 'pointer-events-none'}"
 			/>
@@ -147,7 +147,7 @@
 
 			{#if rename}
 				<div
-					class="flex items-center gap-2 absolute left-full pl-2 opacity-90 p-1"
+					class="flex items-center gap-2 absolute z-20 left-full pl-2 opacity-90 p-1"
 				>
 					<button
 						type="submit"

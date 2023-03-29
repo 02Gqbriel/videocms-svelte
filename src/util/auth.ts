@@ -101,7 +101,7 @@ export async function refreshAuth() {
 			!Number.isNaN(Number(get(tokenExp))) &&
 			dayjs(Number(get(tokenExp)), 'x').diff() > 0
 		) {
-			setTimeout(refreshAuth, dayjs(Number(get(tokenExp)), 'x').diff() - 5000);
+			setTimeout(refreshAuth, dayjs(Number(get(tokenExp)), 'x').diff() - 7500);
 		}
 
 		return;
