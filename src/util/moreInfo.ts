@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 export interface FileInfo {
 	CreatedAt: string;
 	UpdatedAt: string;
+	Thumbnail: string;
 	UUID: string;
 	Name: string;
 	ParentFolderID: number;
@@ -10,6 +11,7 @@ export interface FileInfo {
 	Duration: number;
 	Qualitys: Qualitys[];
 	Subtitles: Subtitles[] | null;
+	Audios: Audios[] | null;
 }
 
 interface Qualitys {
@@ -20,12 +22,21 @@ interface Qualitys {
 	Ready: boolean;
 	Failed: boolean;
 	Progress: number;
+	Type: string;
 }
 
 interface Subtitles {
 	Name: string;
 	Lang: string;
 	Ready: boolean;
+	Type: string;
+}
+
+interface Audios {
+	Name: string;
+	Lang: string;
+	Ready: boolean;
+	Type: string;
 }
 
 export const currentFileInfo = writable<number>();
