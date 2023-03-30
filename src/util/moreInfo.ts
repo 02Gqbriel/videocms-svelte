@@ -14,7 +14,7 @@ export interface FileInfo {
 	Audios: Audios[] | null;
 }
 
-interface Qualitys {
+export interface Qualitys {
 	Name: string;
 	Height: number;
 	Width: number;
