@@ -23,6 +23,7 @@ export interface Qualitys {
 	Failed: boolean;
 	Progress: number;
 	Type: string;
+	Size: number;
 }
 
 interface Subtitles {
