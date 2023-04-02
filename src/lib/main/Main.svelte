@@ -3,20 +3,20 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import VirtualList from './VirtualList.svelte';
-	import { files, filesLoaded, getFile, refreshItems } from '../util/files';
+	import { files, filesLoaded, getFile, refreshItems } from '../../util/files';
 	import { default as ListItem } from './Item.svelte';
 	import {
 		currentFolderID,
 		leaveFolder,
 		prevFolder,
-	} from '../util/folderTraversing';
-	import { refreshAuth, token, tokenExp } from '../util/auth';
-	import { selected, selectItem, unselectItem } from '../util/selected';
-	import { confirmation, fileUpload, newFolder } from '../stores';
-	import HeaderSkeleton from './HeaderSkeleton.svelte';
+	} from '../../util/folderTraversing';
+	import { refreshAuth, token, tokenExp } from '../../util/auth';
+	import { selected, selectItem, unselectItem } from '../../util/selected';
+	import { confirmation, fileUpload, newFolder } from '../../stores';
+	import HeaderSkeleton from '../HeaderSkeleton.svelte';
 	import ListSkeleton from './ListSkeleton.svelte';
-	import { drop } from '../util/dragndrop';
-	import { currentFileInfo, isFileInfoOpen } from '../util/moreInfo';
+	import { drop } from '../../util/dragndrop';
+	import { currentFileInfo, isFileInfoOpen } from '../../util/moreInfo';
 
 	let innerHeight: number;
 
@@ -34,7 +34,7 @@
 <svelte:window bind:innerHeight />
 
 {#if $fileUpload}
-	{#await import('./File.svelte') then { default: File }}
+	{#await import('../uploadFile/File.svelte') then { default: File }}
 		<svelte:component this={File} />
 	{/await}
 {/if}
@@ -45,7 +45,7 @@
 	{/await}
 {/if}
 
-{#await import('./Header.svelte')}
+{#await import('../Header.svelte')}
 	<HeaderSkeleton />
 {:then { default: Header }}
 	<svelte:component this={Header} />
@@ -156,7 +156,7 @@
 			</div>
 
 			{#if $isFileInfoOpen}
-				{#await import('./MoreInfo.svelte') then { default: MoreInfo }}
+				{#await import('../moreInfo/MoreInfo.svelte') then { default: MoreInfo }}
 					{#await getFile($currentFileInfo) then data}
 						<svelte:component this={MoreInfo} fileInfo={data} />
 					{/await}

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { newFolder } from '../stores';
-	import { createFolder } from '../util/files';
-	import { currentFolderID } from '../util/folderTraversing';
+	import { newFolder } from '../../stores';
+	import { createFolder } from '../../util/files';
+	import { currentFolderID } from '../../util/folderTraversing';
 
 	let ref: HTMLInputElement;
 
@@ -63,7 +63,10 @@
 			</svg>
 		</button>
 
-		<button type="submit" class="m-1.5 md:hidden p-2 rounded hover:bg-neutral-800">
+		<button
+			type="submit"
+			class="m-1.5 md:hidden p-2 rounded hover:bg-neutral-800"
+		>
 			Submit
 		</button>
 	</div>

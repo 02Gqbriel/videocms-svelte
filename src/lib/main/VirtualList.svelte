@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import { get } from 'svelte/store';
-	import { contents, dragenter, dragstart, drop } from '../util/dragndrop';
-	import type { Item } from '../util/files';
+	import { contents, dragenter, dragstart, drop } from '../../util/dragndrop';
+	import type { Item } from '../../util/files';
 
 	// props
 	export let items: Item[];

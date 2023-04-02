@@ -29,12 +29,12 @@
 		<div class="min-h-screen ">
 			{#if $token !== 'undefined'}
 				<div class="max-h-screen overflow-hidden">
-					{#await import('./lib/Main.svelte') then { default: Main }}
+					{#await import('./lib/main/Main.svelte') then { default: Main }}
 						<svelte:component this={Main} />
 					{/await}
 				</div>
 			{:else}
-				{#await import('./lib/Login.svelte') then { default: Login }}
+				{#await import('./lib/login/Login.svelte') then { default: Login }}
 					<svelte:component this={Login} />
 				{/await}
 			{/if}

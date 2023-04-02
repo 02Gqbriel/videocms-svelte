@@ -2,12 +2,12 @@
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 
-	import { updateFile, updateFolder } from '../util/files';
-	import type { Item } from '../util/files';
-	import { enterFolder } from '../util/folderTraversing';
-	import { selected, selectItem, unselectItem } from '../util/selected';
-	import { url } from '../stores';
-	import { currentFileInfo, isFileInfoOpen } from '../util/moreInfo';
+	import { updateFile, updateFolder } from '../../util/files';
+	import type { Item } from '../../util/files';
+	import { enterFolder } from '../../util/folderTraversing';
+	import { selected, selectItem, unselectItem } from '../../util/selected';
+	import { url } from '../../stores';
+	import { currentFileInfo, isFileInfoOpen } from '../../util/moreInfo';
 
 	export let item: Item;
 

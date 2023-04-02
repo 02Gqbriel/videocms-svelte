@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
-	import { confirmation } from '../stores';
+	import { confirmation } from '../../stores';
 	import {
 		deleteFile,
 		deleteFolder,
 		deleteFolders,
 		refreshItems,
-	} from '../util/files';
-	import { selected, unselectItem } from '../util/selected';
+	} from '../../util/files';
+	import { selected, unselectItem } from '../../util/selected';
 
 	async function deleteItems() {
 		const folders: { name: string; id: number }[] = [];

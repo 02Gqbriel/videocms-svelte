@@ -3,11 +3,11 @@
 		closeFileInfo,
 		currentFileInfo,
 		type FileInfo,
-	} from '../util/moreInfo';
+	} from '../../util/moreInfo';
 	import dayjs from 'dayjs';
-	import { getFile } from '../util/files';
+	import { getFile } from '../../util/files';
 	import { get } from 'svelte/store';
-	import { newFolder, url } from '../stores';
+	import { newFolder, url } from '../../stores';
 	import QualitiesTable from './QualitiesTable.svelte';
 	import GeneralTable from './GeneralTable.svelte';
 
@@ -51,17 +51,18 @@
 			: null;
 
 	async function refresh() {
-		qualities = [];
-		audios = [];
+		qualities = null;
+		audios = null;
 		subtitles = null;
 
 		const { Qualitys, Audios, Subtitles } = await getFile(get(currentFileInfo));
 
-		qualities = Qualitys.sort().reverse();
+		if (Qualitys !== null) qualities = Qualitys.sort().reverse();
 
-		audios = Audios.sort((v1, v2) => {
-			return v1.Type < v2.Type ? -1 : v1.Type > v2.Type ? 1 : 0;
-		});
+		if (Subtitles !== null)
+			audios = Audios.sort((v1, v2) => {
+				return v1.Type < v2.Type ? -1 : v1.Type > v2.Type ? 1 : 0;
+			});
 
 		if (Subtitles !== null) {
 			subtitles = Subtitles.sort((v1, v2) => {
@@ -163,7 +164,7 @@
 			<div class="flex flex-col gap-1">
 				<span class="flex-1">Qualities:</span>
 
-				{#if qualities.length > 0}
+				{#if qualities !== null && qualities.length > 0}
 					<QualitiesTable {qualities} />
 				{/if}
 			</div>
@@ -171,7 +172,7 @@
 			<div class="flex flex-col gap-1">
 				<span class="flex-1">Audios:</span>
 
-				{#if audios.length > 0}
+				{#if audios !== null && audios.length > 0}
 					<GeneralTable tracks={audios} />
 				{/if}
 			</div>

@@ -1,7 +1,7 @@
 <script lang="ts" async="true">
-	import { refreshItems, uploadFile } from '../util/files';
-	import { fileUpload } from '../stores';
-	import { extractFrameFromVideo } from '../util/thumbnail';
+	import { refreshItems, uploadFile } from '../../util/files';
+	import { fileUpload } from '../../stores';
+	import { extractFrameFromVideo } from '../../util/thumbnail';
 
 	interface FilePreviewList {
 		file: File;
@@ -139,7 +139,7 @@
 					{#each files as { file, uri, sha256 } (sha256)}
 						{#if uri === null}
 							<div
-								class="w-[49%] aspect-video animate-pulse bg-neutral-700 overflow-hidden my-2 rounded-lg flex"
+								class="w-[247px] aspect-video animate-pulse bg-neutral-700 overflow-hidden my-2 rounded-lg flex"
 							>
 								<span class="p-2 flex-grow">{file.name}</span>
 							</div>{:else}

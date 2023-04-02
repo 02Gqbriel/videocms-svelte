@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Audios, Subtitles } from '../util/moreInfo';
+	import type { Audios, Subtitles } from '../../util/moreInfo';
 
 	export let tracks: Audios[] | Subtitles[];
 
