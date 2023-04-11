@@ -23,16 +23,17 @@ export interface Qualitys {
 	Failed: boolean;
 	Progress: number;
 	Type: string;
+	Size: number;
 }
 
-interface Subtitles {
+export interface Subtitles {
 	Name: string;
 	Lang: string;
 	Ready: boolean;
 	Type: string;
 }
 
-interface Audios {
+export interface Audios {
 	Name: string;
 	Lang: string;
 	Ready: boolean;

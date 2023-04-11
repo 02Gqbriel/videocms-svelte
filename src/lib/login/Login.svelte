@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { login } from '../util/auth';
+	import { login } from '../../util/auth';
 
 	let loading: boolean = false;
 
