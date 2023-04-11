@@ -65,14 +65,12 @@
 
 <div
 	style="max-height: {innerHeight - ($newFolder ? 168 : 117) + 'px'};"
-	class="relative overflow-x-auto  flex-col border-l h-full p-2 border-gray-800 border-opacity-10 pb-7  max-w-md w-full min-w-[400px]"
+	class="relative overflow-x-auto flex-col border-l h-full p-2 border-gray-800 border-opacity-10 pb-7 max-w-md w-full min-w-[400px]"
 >
-	<div
-		class="sticky p-1 -m-2 rounded left-full top-0 flex flex-row-reverse bg-neutral-900/20 backdrop-blur-sm w-min"
-	>
+	<div class="sticky w-full p-px rounded right-0 top-0 flex flex-row-reverse">
 		<button
 			on:click={closeFileInfo}
-			class="w-7 h-7 flex justify-center items-center hover:bg-neutral-800/20 rounded"
+			class="w-7 h-7 flex float-right justify-center items-center hover:bg-neutral-800/20 rounded bg-neutral-900/20 backdrop-blur-sm"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +86,7 @@
 
 		<button
 			on:click={refresh}
-			class="w-7 h-7 flex justify-center items-center hover:bg-neutral-800/20 rounded"
+			class="w-7 h-7 flex float-right justify-center items-center hover:bg-neutral-800/20 rounded bg-neutral-900/20 backdrop-blur-sm"
 		>
 			<svg
 				style="animation-duration: 200ms; animation-direction: alternate; animation-timing-function: ease-in-out;"
@@ -106,8 +104,8 @@
 		</button>
 	</div>
 
-	<div class="flex justify-evenly flex-col  gap-5 ">
-		<h1 class="text-lg pr-14 max-w-full m  truncate">
+	<div class="flex justify-evenly flex-col gap-5">
+		<h1 class="text-lg pr-14 max-w-full m truncate">
 			{fileInfo.Name}
 		</h1>
 
@@ -151,7 +149,7 @@
 					class="flex divide-y divide-opacity-20 divide-neutral-800 flex-col flex-wrap"
 				>
 					{#each qualities as quality}
-						<div class="px-1 py-1 flex flex-col gap-2 ">
+						<div class="px-1 py-1 flex flex-col gap-2">
 							<div class="flex justify-between items-center">
 								<h1 class="font-light text-xs">
 									{quality.Name}
@@ -203,7 +201,7 @@
 												viewBox="0 0 20 20"
 												fill="currentColor"
 												style="animation-duration: 2.5s;"
-												class="w-4 h-4 animate-spin  opacity-50"
+												class="w-4 h-4 animate-spin opacity-50"
 											>
 												<path
 													fill-rule="evenodd"
@@ -232,7 +230,7 @@
 				<div class="flex flex-col gap-2">
 					<span class="flex-1">Subtitles:</span>
 					<div
-						class="flex divide-opacity-20 divide-neutral-800 justify-between  flex-wrap"
+						class="flex divide-opacity-20 divide-neutral-800 justify-between flex-wrap"
 					>
 						{#each subtitles as subtitle}
 							<div class="px-1 py-1 flex flex-col gap-2 w-[49%]">
@@ -270,7 +268,7 @@
 													viewBox="0 0 20 20"
 													fill="currentColor"
 													style="animation-duration: 2.5s;"
-													class="w-4 h-4 animate-spin  opacity-50"
+													class="w-4 h-4 animate-spin opacity-50"
 												>
 													<path
 														fill-rule="evenodd"
@@ -290,7 +288,7 @@
 
 			<div class="flex flex-col gap-2">
 				<span class="flex-1">Audios:</span>
-				<div class="flex divide-opacity-20 divide-neutral-800 justify-between  flex-wrap">
+				<div class="flex divide-opacity-20 divide-neutral-800 justify-between flex-wrap">
 					{#each audios as audio}
 						<div class="px-1 py-1 flex flex-col gap-2 w-[49%]">
 							<div class="flex justify-between items-center">
@@ -299,11 +297,11 @@
 								</h1>
 
 								<div class="flex gap-2 items-center">
-									<p class="text-xs flex justify-end font-extralight ">
+									<p class="text-xs flex justify-end font-extralight">
 										{audio.Lang}
 									</p>
 
-									<p class="text-xs flex justify-end font-extralight ">
+									<p class="text-xs flex justify-end font-extralight">
 										{audio.Type}
 									</p>
 
@@ -327,7 +325,7 @@
 												viewBox="0 0 20 20"
 												fill="currentColor"
 												style="animation-duration: 2.5s;"
-												class="w-4 h-4 animate-spin  opacity-50"
+												class="w-4 h-4 animate-spin opacity-50"
 											>
 												<path
 													fill-rule="evenodd"

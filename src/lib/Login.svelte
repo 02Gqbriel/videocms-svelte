@@ -19,7 +19,7 @@
 <form
 	class="max-w-screen-sm mx-auto flex justify-center flex-col h-screen p-4 md:p-16 gap-5"
 	method="POST"
-	autocomplete="new-password"
+
 	on:submit={handleSubmit}
 >
 	<h1 class="text-5xl  font-bold mb-5">Login</h1>
@@ -33,7 +33,7 @@
 			class="bg-neutral-800 border border-neutral-700 text-sm rounded-lg focus:ring-blue-700 focus:border-blue-700 block w-full p-2.5 outline-none"
 			placeholder="e.g. John Doe"
 			required
-			autocomplete="new-password"
+			autocomplete="username"
 			bind:value={username}
 		/>
 	</fieldset>
@@ -48,7 +48,7 @@
 			class="bg-neutral-800 border border-neutral-700 text-sm rounded-lg focus:ring-blue-700 focus:border-blue-700 block w-full p-2.5 outline-none"
 			placeholder="******************"
 			required
-			autocomplete="new-password"
+			autocomplete="password"
 			bind:value={password}
 		/>
 	</fieldset>

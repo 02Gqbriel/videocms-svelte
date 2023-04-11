@@ -18,6 +18,8 @@ export function dragstart(ev: DragEvent, item: Item) {
 }
 
 export function drop(ev: DragEvent, id: number, type: 'Folder' | 'File') {
+	console.log(id, type, get(draggedItem).ID, get(draggedItem).Type);
+
 	dragging.set(false);
 
 	if (type === 'File' || id === -1) return;
@@ -26,12 +28,10 @@ export function drop(ev: DragEvent, id: number, type: 'Folder' | 'File') {
 
 	const draggeditem = get(draggedItem);
 
-	if (draggeditem && draggeditem.ID !== id && draggeditem.Type !== type) {
-		if (draggeditem.Type == 'File') {
-			updateFile(draggeditem.ID, id, draggeditem.Name);
-		} else {
-			updateFolder(draggeditem.ID, id, draggeditem.Name);
-		}
+	if (draggeditem.Type === type ? draggeditem.ID !== id : true) {
+		draggeditem.Type == 'File'
+			? updateFile(draggeditem.ID, id, draggeditem.Name)
+			: updateFolder(draggeditem.ID, id, draggeditem.Name);
 	}
 }
 

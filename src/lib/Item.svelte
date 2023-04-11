@@ -43,8 +43,8 @@
 
 	let isSelected: boolean = false;
 
-	selected.subscribe(v => {
-		isSelected = v.some(e => e.id === item.ID && e.type === item.Type);
+	selected.subscribe((v) => {
+		isSelected = v.some((e) => e.id === item.ID && e.type === item.Type);
 	});
 </script>
 
@@ -55,10 +55,10 @@
 		? '!bg-neutral-800/50'
 		: ''}"
 >
-	<div class="flex items-center  gap-2 p-3">
-		{#if $selected.some(e => e.id === item.ID && e.type === item.Type)}
+	<div class="flex items-center gap-2 p-3">
+		{#if $selected.some((e) => e.id === item.ID && e.type === item.Type)}
 			<button
-				on:click={e => {
+				on:click={(e) => {
 					e.preventDefault();
 					unselectItem(item.ID, item.Type, item.Name);
 				}}
@@ -78,7 +78,7 @@
 			</button>
 		{:else}
 			<button
-				on:click={e => {
+				on:click={(e) => {
 					e.preventDefault();
 					selectItem(item.ID, item.Type, item.Name);
 				}}
@@ -131,8 +131,8 @@
 				readonly={!rename}
 				bind:this={ref}
 				bind:value
-				on:click={e => e.preventDefault()}
-				on:keydown={e => {
+				on:click={(e) => e.preventDefault()}
+				on:keydown={(e) => {
 					if (e.key === ' ') {
 						e.preventDefault();
 					}
@@ -141,8 +141,14 @@
 						e.preventDefault();
 						handleRename(e);
 					}
+
+					if (e.key === 'Escape') {
+						e.preventDefault();
+						rename = false;
+						ref.value = item.Name;
+					}
 				}}
-				class="bg-transparent flex-grow w-full  z-10 absolute  top-0 -translate-y-[-22.5%] right-0 left-0  focus-within:outline-none  {rename
+				class="bg-transparent flex-grow w-full z-10 absolute top-0 -translate-y-[-22.5%] right-0 left-0 focus-within:outline-none {rename
 					? ''
 					: 'pointer-events-none'}"
 			/>
@@ -152,12 +158,10 @@
 			{/if}
 
 			{#if rename}
-				<div
-					class="flex items-center gap-2 absolute z-20 left-full pl-2 opacity-90 p-1"
-				>
+				<div class="flex items-center gap-2 absolute z-20 left-full pl-2 opacity-90 p-1">
 					<button
 						type="submit"
-						on:click={e => {
+						on:click={(e) => {
 							e.preventDefault();
 							handleRename(e);
 						}}
@@ -178,7 +182,7 @@
 					</button>
 
 					<button
-						on:click={async e => {
+						on:click={async (e) => {
 							e.preventDefault();
 							rename = false;
 							ref.value = item.Name;
@@ -199,7 +203,7 @@
 			{:else}
 				<button
 					type="button"
-					on:click={e => {
+					on:click={(e) => {
 						e.preventDefault();
 						rename = true;
 
@@ -229,7 +233,7 @@
 
 	<div class="flex mr-2 px-3 gap-3">
 		{#if !$isFileInfoOpen}
-			<div class="flex items-center justify-end  mr-2">
+			<div class="flex items-center justify-end mr-2">
 				<span
 					title="This {item.Type.toLowerCase()} was created {dayjs(
 						item.CreatedAt
@@ -242,7 +246,7 @@
 
 		<button
 			disabled={item.Type == 'Folder'}
-			on:click={ev => {
+			on:click={(ev) => {
 				ev.preventDefault();
 				isFileInfoOpen.set(true);
 				currentFileInfo.set(item.ID);
@@ -257,8 +261,7 @@
 				version="1.2"
 				viewBox="0 0 24 24"
 				width="24px"
-				class="w-6 h-6 opacity-75 fill-current {item.Type == 'Folder' &&
-					'invisible'}"
+				class="w-6 h-6 opacity-75 fill-current {item.Type == 'Folder' && 'invisible'}"
 				xml:space="preserve"
 				xmlns="http://www.w3.org/2000/svg"
 				xmlns:xlink="http://www.w3.org/1999/xlink"
