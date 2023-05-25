@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	*::selection {
+		@apply bg-blue-900 text-blue-200;
+	}
+
+	:root {
+		--scrollbarBG: rgba(1 1 1 /0);
+		--thumbBG: rgb(38 38 38 / 0.5);
+		overflow-x: overlay;
+	}
+
+	:root,
+	dialog {
+		@apply bg-neutral-900 text-neutral-200/90;
+	}
+
+	*::-webkit-scrollbar {
+		width: 7.5px;
+	}
+
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+
+		font-weight: 500;
+		font-synthesis: none;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+
+		overflow: hidden;
+
+		@apply tracking-wide;
+	}
+
+	*::-webkit-scrollbar-track {
+		background: var(--scrollbarBG);
+	}
+
+	*::-webkit-scrollbar-thumb {
+		background-color: var(--thumbBG);
+		border-radius: 6px;
+		border: 3px solid var(--scrollbarBG);
+	}
+
+	input[type='checkbox'] {
+		@apply border-[1px] border-neutral-800 bg-neutral-800/50;
+	}
+
+	input[type='checkbox']:focus {
+		@apply appearance-none outline-none ring-0 ring-offset-0;
+	}
+
+	input[type='checkbox']:checked,
+	input[type='checkbox']:checked:focus,
+	input[type='checkbox']:focus:checked {
+		@apply border-blue-600 bg-blue-900 bg-none;
+	}
+}
