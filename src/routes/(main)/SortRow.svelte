@@ -178,7 +178,7 @@
 
 		<div class="flex gap-2">
 			<button
-				class="flex w-[1px] items-center justify-start text-xs"
+				class="flex w-[122px] items-center justify-start text-xs"
 				on:click={() => setKey('UpdatedAt')}
 			>
 				<span class="font-semibold">LAST MODIFIED</span>
