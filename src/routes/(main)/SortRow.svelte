@@ -27,7 +27,7 @@
 	<div
 		class="flex items-center justify-between border-b border-neutral-700 border-opacity-10 px-2 py-1 pr-4 text-sm"
 	>
-		<div class="flex items-center gap-2.5">
+		<div class="ml-px flex items-center gap-2.5">
 			<button title="Back" on:click={() => back()}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +105,7 @@
 						viewBox="0 0 24 24"
 						stroke-width="4"
 						stroke="currentColor"
-						class="pointer-events-none absolute left-1/2 top-1/2 h-2 w-2.5 -translate-x-1/2 -translate-y-1/2 "
+						class="pointer-events-none absolute left-1/2 top-1/2 h-2 w-2.5 -translate-x-1/2 -translate-y-1/2"
 					>
 						<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
 					</svg>

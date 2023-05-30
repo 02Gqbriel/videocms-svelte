@@ -1,5 +1,5 @@
 import type { CreateMutateFunction } from '@tanstack/svelte-query';
-import isEqual from 'lodash.isequal';
+import { isEqual } from 'radash';
 import type { IMoveFolderParams } from './files';
 import toast from 'svelte-french-toast';
 import { writable } from 'svelte/store';
@@ -17,9 +17,7 @@ export let draggedItem: IDragItem;
 
 export const dragging = writable<boolean>(false);
 
-export function dragstart(ev: DragEvent, item: IDragItem) {
-	console.log('dragstart');
-
+export function dragstart(item: IDragItem) {
 	draggedItem = item;
 	dragging.set(true);
 }
@@ -49,8 +47,6 @@ export function dragend(
 }
 
 export function dragover(item: IDragItem) {
-	console.log('dragover');
-
 	if (isEqual(item, lastDragTarget)) return;
 
 	lastDragTarget = item;

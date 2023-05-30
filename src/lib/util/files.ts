@@ -23,7 +23,60 @@ export interface Item {
 	ParentFolderID: number;
 }
 
+export interface FileInfos {
+	CreatedAt: Date;
+	UpdatedAt: Date;
+	UUID: string;
+	Name: string;
+	Thumbnail: string;
+	ParentFolderID: number;
+	Size: number;
+	Duration: number;
+	Qualitys: Quality[];
+	Subtitles: Audio[];
+	Audios: Audio[];
+}
+
+export interface Audio {
+	Name: string;
+	Type: Type;
+	Lang: string;
+	Ready: boolean;
+}
+
+export type Type = 'hls' | 'ass' | 'vtt';
+
+export interface Quality {
+	Name: string;
+	Type: string;
+	Height: number;
+	Width: number;
+	AvgFrameRate: number;
+	Ready: boolean;
+	Failed: boolean;
+	Progress: number;
+	Size: number;
+}
+
 export const files = writable<(FileItem | FolderItem)[]>([]);
+
+export async function getFileInfos(FileID: number) {
+	const headers = {
+		Authorization: 'Basic ' + get(tokenStore),
+		'Access-Control-Allow-Headers': 'Authorization',
+		'Access-Control-Allow-Credentials': 'true'
+	};
+
+	const res = await fetch(`${url}/api/file?LinkID=${FileID}`, {
+		headers
+	});
+
+	if (!res.ok) {
+		throw new Error(res.statusText);
+	}
+
+	return <FileInfos>await res.json();
+}
 
 export async function getFiles(ParentFolderID: number) {
 	const headers = {

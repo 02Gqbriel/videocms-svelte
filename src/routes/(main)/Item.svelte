@@ -10,9 +10,9 @@
 
 	export let item: FolderItem | FileItem;
 
-	function handleClick(ev: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
-		console.log($dragging);
+	type IHandleClickParameter = MouseEvent & { currentTarget: EventTarget & HTMLButtonElement };
 
+	function handleClick(ev: IHandleClickParameter) {
 		if ($dragging) {
 			ev.preventDefault();
 			ev.stopPropagation();
@@ -48,12 +48,11 @@
 	};
 
 	const openInfo = (ev: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) => {
+		ev.preventDefault();
 		ev.stopImmediatePropagation();
 
 		if (ev.currentTarget.tagName !== 'div') isInfoOpen = true;
 	};
-
-	$: console.log(isInfoOpen);
 
 	let dragItem: IDragItem;
 
@@ -81,9 +80,9 @@
 	target={item.Type === 'File' ? '_blank' : undefined}
 	on:click={handleClick}
 	style="cursor: {$dragging ? (item.Type == 'Folder' ? 'pointer' : 'not-allowed') : 'pointer'};"
-	class="flex h-10 w-full items-center justify-between pl-2 pr-4 text-sm  hover:bg-neutral-800/10"
+	class="flex h-10 w-full items-center justify-between pl-2 pr-4 text-sm hover:bg-neutral-800/10"
 	draggable={true}
-	on:dragstart|preventDefault={(ev) => dragstart(ev, dragItem)}
+	on:dragstart|preventDefault={() => dragstart(dragItem)}
 	on:pointerover={() => $dragging && dragover(dragItem)}
 	on:pointerup={() => $dragging && dragend($moveFileMutation.mutate)}
 >
@@ -103,7 +102,7 @@
 					viewBox="0 0 24 24"
 					stroke-width="4"
 					stroke="currentColor"
-					class="pointer-events-none absolute left-1/2 top-1/2 h-2 w-2.5 -translate-x-1/2 -translate-y-1/2 "
+					class="pointer-events-none absolute left-1/2 top-1/2 h-2 w-2.5 -translate-x-1/2 -translate-y-1/2"
 				>
 					<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
 				</svg>
@@ -139,12 +138,12 @@
 		</span>
 	</div>
 
-	<div class="flex items-center gap-2 ">
+	<div class="flex items-center gap-2">
 		<p class="w-[120px] text-center text-xs tabular-nums">
 			{dayjs(item.UpdatedAt).format('HH:mm - DD/MM/YYYY')}
 		</p>
 
-		<button on:click|stopPropagation={openInfo} class="group rounded p-1 hover:bg-neutral-800/20 ">
+		<button on:click|stopPropagation={openInfo} class="group rounded p-1 hover:bg-neutral-800/20">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
@@ -160,5 +159,5 @@
 </svelte:element>
 
 {#if isInfoOpen}
-	<FileInfo {closeInfo} />
+	<FileInfo {closeInfo} itemId={item.ID} />
 {/if}
