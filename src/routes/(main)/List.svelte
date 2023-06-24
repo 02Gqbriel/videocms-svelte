@@ -177,7 +177,7 @@
 	<svelte-virtual-list-contents
 		bind:this={contents}
 		style="padding-top: {top}px; padding-bottom: {bottom}px;"
-		class="divide-y divide-neutral-700 divide-opacity-10"
+		class="mb-6 divide-y divide-neutral-700 divide-opacity-10 border-b border-neutral-700 border-opacity-10"
 	>
 		{#each visible as row (row.index)}
 			{@const item = {

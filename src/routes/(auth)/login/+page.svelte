@@ -31,18 +31,18 @@
 </script>
 
 <form
-	class="max-w-screen-sm mx-auto flex justify-center flex-col h-screen p-4 md:p-16 gap-5"
+	class="mx-auto flex h-screen max-w-screen-sm flex-col justify-center gap-5 p-4 md:p-16"
 	method="POST"
 	on:submit={handleSubmit}
 >
-	<h1 class="text-5xl px-1 font-bold pb-5">Login</h1>
+	<h1 class="px-1 pb-5 text-5xl font-bold">Login</h1>
 
 	<fieldset class="p-1">
-		<label for="username" class="block mb-1.5 text-sm">Username</label>
+		<label for="username" class="mb-1.5 block text-sm">Username</label>
 		<input
 			type="text"
 			id="username"
-			class="bg-neutral-800/50 border-2 border-neutral-800 text-sm rounded-lg focus:ring-blue-900/50 focus:border-blue-800 focus:ring-4 caret-blue-900 block w-full px-2 py-3 outline-none placeholder:text-neutral-600"
+			class="block w-full rounded-lg border-2 border-neutral-800 bg-neutral-800/50 px-2 py-3 text-sm caret-blue-900 outline-none placeholder:text-neutral-600 focus:border-blue-800 focus:ring-4 focus:ring-blue-900/50"
 			placeholder="e.g. John Doe"
 			required
 			autocomplete="username"
@@ -51,14 +51,14 @@
 	</fieldset>
 
 	<fieldset class="p-1">
-		<label for="password" class="block mb-1.5 text-sm">Password</label>
+		<label for="password" class="mb-1.5 block text-sm">Password</label>
 		<input
 			type="password"
 			id="password"
-			class="bg-neutral-800/50 border-2 border-neutral-800 text-sm rounded-lg focus:ring-blue-900/50 focus:border-blue-800 focus:ring-4 caret-blue-900 block w-full px-2 py-3 outline-none placeholder:text-neutral-600"
+			class="block w-full rounded-lg border-2 border-neutral-800 bg-neutral-800/50 px-2 py-3 text-sm caret-blue-900 outline-none placeholder:text-neutral-600 focus:border-blue-800 focus:ring-4 focus:ring-blue-900/50"
 			placeholder="******************"
 			required
-			autocomplete="password"
+			autocomplete="current-password"
 			bind:value={password}
 		/>
 	</fieldset>
@@ -66,7 +66,7 @@
 	<button
 		disabled={loading}
 		type="submit"
-		class="text-white bg-blue-700 mx-1 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-500 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center mt-5 mb-10"
+		class="mx-1 mb-10 mt-5 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-500 sm:w-auto"
 	>
 		{#if loading}
 			<svg

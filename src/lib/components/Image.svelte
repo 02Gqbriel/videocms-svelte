@@ -16,6 +16,9 @@
 	export let image: IPictureData;
 	export let alt = '';
 
+	export let width: number | undefined = undefined;
+	export let height: number | undefined = undefined;
+
 	const { sources, fallback } = image;
 </script>
 
@@ -24,5 +27,5 @@
 		<source srcset={images.map((i) => i.src + ' ' + i.w + 'w').join(', ')} type="image/{format}" />
 	{/each}
 
-	<img src={fallback.src} {alt} loading="eager" decoding="async" />
+	<img src={fallback.src} {alt} loading="eager" decoding="async" {width} {height} />
 </picture>

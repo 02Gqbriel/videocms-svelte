@@ -89,6 +89,7 @@
 	<div class="flex h-min items-center gap-2.5">
 		<div class="relative ml-1.5 mr-1 flex">
 			<input
+				aria-label="Select Item"
 				type="checkbox"
 				class="h-3.5 w-3.5 cursor-pointer rounded-[25%]"
 				bind:checked={isItemSelected}
@@ -143,7 +144,11 @@
 			{dayjs(item.UpdatedAt).format('HH:mm - DD/MM/YYYY')}
 		</p>
 
-		<button on:click|stopPropagation={openInfo} class="group rounded p-1 hover:bg-neutral-800/20">
+		<button
+			on:click|stopPropagation={openInfo}
+			aria-label="Name"
+			class="group rounded p-1 hover:bg-neutral-800/20"
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
@@ -159,5 +164,5 @@
 </svelte:element>
 
 {#if isInfoOpen}
-	<FileInfo {closeInfo} itemId={item.ID} />
+	<FileInfo itemId={item.ID} />
 {/if}

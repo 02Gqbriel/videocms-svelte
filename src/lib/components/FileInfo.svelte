@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getFileInfos } from '$lib/util/files';
 
-	export let closeInfo: () => void;
 	export let itemId: number;
 
 	function dragElement(node: HTMLButtonElement) {

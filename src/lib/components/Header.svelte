@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { confirmation, fileUpload, newFolder } from '$lib/util/stores';
-	import image from '$lib/assets/logo.png?w=30;50;100&quality=100&format=avif;webp;png&picture';
+	import image from '$lib/assets/logo.png?w=30;50&quality=90&format=avif;webp;png&picture';
 	import Image from './Image.svelte';
 	import { currentFolderId } from '$lib/util/traversing';
 	import { selected } from '$lib/util/selected';
@@ -15,8 +15,8 @@
 <header
 	class="sticky left-0 right-0 top-0 z-50 flex justify-between bg-neutral-900/30 px-2 py-3 backdrop-blur-sm"
 >
-	<a class="w-11" href="/">
-		<Image {image} />
+	<a class="w-11" href="/" aria-label="Home">
+		<Image {image} height={50} width={50} />
 	</a>
 
 	<nav class="flex h-min items-center gap-1.5 text-sm">

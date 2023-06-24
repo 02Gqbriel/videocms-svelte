@@ -63,7 +63,6 @@ export const files = writable<(FileItem | FolderItem)[]>([]);
 export async function getFileInfos(FileID: number) {
 	const headers = {
 		Authorization: 'Basic ' + get(tokenStore),
-		'Access-Control-Allow-Headers': 'Authorization',
 		'Access-Control-Allow-Credentials': 'true'
 	};
 
@@ -81,7 +80,6 @@ export async function getFileInfos(FileID: number) {
 export async function getFiles(ParentFolderID: number) {
 	const headers = {
 		Authorization: 'Basic ' + get(tokenStore),
-		'Access-Control-Allow-Headers': 'Authorization',
 		'Access-Control-Allow-Credentials': 'true'
 	};
 
@@ -145,7 +143,6 @@ export async function createFile({ file }: ICreateFileParams): Promise<FileItem>
 		body: formData,
 		headers: {
 			Authorization: 'Basic ' + token,
-			'Access-Control-Allow-Headers': 'Authorization',
 			'Access-Control-Allow-Credentials': 'true'
 		}
 	});
@@ -171,7 +168,6 @@ export async function createFile({ file }: ICreateFileParams): Promise<FileItem>
 		body: formData,
 		headers: {
 			Authorization: 'Basic ' + token,
-			'Access-Control-Allow-Headers': 'Authorization',
 			'Access-Control-Allow-Credentials': 'true'
 		}
 	});
@@ -209,7 +205,6 @@ export async function createFolder({ name, parentFolderID }: ICreateFolderParams
 		method: 'POST',
 		headers: {
 			Authorization: 'Basic ' + token,
-			'Access-Control-Allow-Headers': 'Authorization',
 			'Access-Control-Allow-Credentials': 'true'
 		},
 		body: formData
@@ -250,7 +245,6 @@ export async function moveFile({ id, parentFolderId, name, type }: IMoveFolderPa
 		method: 'PUT',
 		headers: {
 			Authorization: 'Basic ' + token,
-			'Access-Control-Allow-Headers': 'Authorization',
 			'Access-Control-Allow-Credentials': 'true'
 		},
 		body: formData
@@ -282,7 +276,6 @@ export async function deleteFile({ id, type }: IDeleteFileParams) {
 		method: 'DELETE',
 		headers: {
 			Authorization: 'Basic ' + token,
-			'Access-Control-Allow-Headers': 'Authorization',
 			'Access-Control-Allow-Credentials': 'true'
 		},
 		body: formData
@@ -317,7 +310,6 @@ export async function deleteMany({ items, type }: IDeleteManyParams) {
 		method: 'DELETE',
 		headers: {
 			Authorization: 'Basic ' + token,
-			'Access-Control-Allow-Headers': 'Authorization',
 			'Access-Control-Allow-Credentials': 'true',
 			'Content-Type': 'application/json'
 		},
