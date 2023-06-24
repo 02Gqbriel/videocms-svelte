@@ -31,7 +31,7 @@ export function dragend(
 	if (targetIsOutside) return;
 
 	if (isEqual(draggedItem, lastDragTarget) || lastDragTarget === undefined)
-		return toast.error(`${draggedItem.type} cannot be moved into it self`);
+		return toast.error(`${draggedItem.type} cannot be moved into itself`);
 
 	if (lastDragTarget.type === 'File')
 		return toast.error(`${draggedItem.type} cannot be moved to a file`);

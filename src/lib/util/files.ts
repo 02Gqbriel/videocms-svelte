@@ -266,6 +266,74 @@ export async function moveFile({ id, parentFolderId, name, type }: IMoveFolderPa
 	}
 }
 
+interface IDeleteFileParams {
+	id: number;
+	type: 'Folder' | 'File';
+}
+
+export async function deleteFile({ id, type }: IDeleteFileParams) {
+	const loading = toast.loading(`Deleting ${type}`);
+	const formData = new FormData();
+	const token = get(tokenStore);
+
+	formData.append('LinkID', id.toString());
+
+	const res = await fetch(`${url}/api/${type.toLowerCase()}`, {
+		method: 'DELETE',
+		headers: {
+			Authorization: 'Basic ' + token,
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true'
+		},
+		body: formData
+	});
+
+	toast.remove(loading);
+
+	if (res.ok) {
+		toast.success(`${type} has been deleted successfully`);
+	} else {
+		toast.error(`${type} couldn't be deleted`);
+		throw new Error(`${type} couldn't be deleted`);
+	}
+}
+
+interface IDeleteManyParams {
+	items: number[];
+	type: 'Folder' | 'File';
+}
+
+export async function deleteMany({ items, type }: IDeleteManyParams) {
+	const loading = toast.loading(`Deleting ${items.length} ${type}s`);
+	const token = get(tokenStore);
+
+	const body = {
+		[type == 'Folder' ? 'FolderIDs' : 'LinkIDs']: items.map((id) => ({
+			[type == 'Folder' ? 'FolderID' : 'LinkID']: id
+		}))
+	};
+
+	const res = await fetch(`${url}/api/${type.toLowerCase()}s`, {
+		method: 'DELETE',
+		headers: {
+			Authorization: 'Basic ' + token,
+			'Access-Control-Allow-Headers': 'Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	});
+
+	toast.remove(loading);
+
+	if (res.ok) {
+		toast.success(`${items.length} ${type}s has been deleted successfully`);
+	} else {
+		toast.error(`${items.length} ${type}s couldn't be deleted`);
+		throw new Error(`${items.length} ${type}s couldn't be deleted`);
+	}
+}
+
 function trimName(name: string) {
 	return name.length > 10 ? name.substring(0, 10) + '...' : name;
 }

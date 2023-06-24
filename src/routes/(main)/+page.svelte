@@ -9,7 +9,7 @@
 	import { currentFolderId } from '$lib/util/traversing';
 
 	import SortRow from './SortRow.svelte';
-	import { fileUpload, newFolder } from '$lib/util/stores';
+	import { confirmation, fileUpload, newFolder } from '$lib/util/stores';
 	import { dragging } from '$lib/util/dragndrop';
 
 	let innerHeight: number = 0;
@@ -24,6 +24,12 @@
 
 <div class="grow">
 	<SortRow />
+
+	{#if $confirmation}
+		{#await import('./Confirmation.svelte') then { default: Confirmation }}
+			<Confirmation />
+		{/await}
+	{/if}
 
 	{#if $newFolder}
 		{#await import('./NewFolder.svelte') then { default: NewFolder }}

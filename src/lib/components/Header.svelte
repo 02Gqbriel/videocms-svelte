@@ -4,7 +4,8 @@
 	import Image from './Image.svelte';
 	import { currentFolderId } from '$lib/util/traversing';
 	import { selected } from '$lib/util/selected';
-	import { useQueryClient } from '@tanstack/svelte-query';
+	import { createMutation, useQueryClient } from '@tanstack/svelte-query';
+	import { deleteFile, deleteMany } from '$lib/util/files';
 
 	const queryClient = useQueryClient();
 
@@ -12,17 +13,17 @@
 </script>
 
 <header
-	class="sticky top-0 left-0 right-0 z-50 flex justify-between px-2 py-3 bg-neutral-900/30 backdrop-blur-sm"
+	class="sticky left-0 right-0 top-0 z-50 flex justify-between bg-neutral-900/30 px-2 py-3 backdrop-blur-sm"
 >
 	<a class="w-11" href="/">
 		<Image {image} />
 	</a>
 
-	<nav class="flex items-center gap-1.5 h-min text-sm">
-		<button title="Refresh" on:click={reload} class="p-2 rounded-md hover:bg-neutral-700/20">
+	<nav class="flex h-min items-center gap-1.5 text-sm">
+		<button title="Refresh" on:click={reload} class="rounded-md p-2 hover:bg-neutral-700/20">
 			<svg
 				style="animation-duration: 300ms; animation-direction: alternate; animation-timing-function: ease-in-out;"
-				class="fill-current w-4 h-4 active:animate-spin"
+				class="h-4 w-4 fill-current active:animate-spin"
 				height="32"
 				id="refresh"
 				viewBox="0 0 32 32"
@@ -37,13 +38,13 @@
 
 		<button
 			on:click={() => newFolder.set(true)}
-			class="flex items-center gap-2 py-1.5 px-3 hover:bg-neutral-700/20 rounded-md"
+			class="flex items-center gap-2 rounded-md px-3 py-1.5 hover:bg-neutral-700/20"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
 				fill="currentColor"
-				class="w-4 h-4"
+				class="h-4 w-4"
 			>
 				<path
 					fill-rule="evenodd"
@@ -57,13 +58,13 @@
 
 		<button
 			on:click={() => ($fileUpload = true)}
-			class="flex items-center gap-2 py-1.5 px-3 bg-blue-900 hover:bg-blue-700/90 rounded-md text-blue-100"
+			class="flex items-center gap-2 rounded-md bg-blue-900 px-3 py-1.5 text-blue-100 hover:bg-blue-700/90"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
 				fill="currentColor"
-				class="w-4 h-4"
+				class="h-4 w-4"
 			>
 				<path
 					fill-rule="evenodd"
@@ -83,13 +84,13 @@
 					confirmation.set(true);
 				}}
 				title="Delete selected items"
-				class="flex items-center py-2 px-3 bg-red-900 hover:bg-red-700/90 fill-red-100 rounded-md"
+				class="flex items-center rounded-md bg-red-600 fill-red-50 px-3 py-2 hover:bg-red-500"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"
 					fill="currentColor"
-					class="w-4 h-4 "
+					class="h-4 w-4"
 				>
 					<path
 						fill-rule="evenodd"

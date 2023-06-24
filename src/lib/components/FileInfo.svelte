@@ -1,55 +1,77 @@
 <script lang="ts">
-	import { tryit } from 'radash';
 	import { getFileInfos } from '$lib/util/files';
 
 	export let closeInfo: () => void;
 	export let itemId: number;
 
-	let x: number;
-	let y: number;
+	function dragElement(node: HTMLButtonElement) {
+		let moving = false;
+		let left = window.innerWidth / 2 - node.offsetWidth;
+		let top = window.innerHeight / 2 - node.offsetHeight;
 
-	let clientWidth: number;
-	let clientHeight: number;
+		console.log(window.innerHeight / 2 - node.clientHeight, window.innerHeight, node.clientHeight);
 
-	type IPointerMoveParameter = PointerEvent & { currentTarget: EventTarget & Window };
+		node.style.top = `${top}px`;
+		node.style.left = `${left}px`;
 
-	const pointermove = (ev: IPointerMoveParameter) => {
-		if (!draggingFileInfo) return;
+		node.addEventListener('mousedown', () => {
+			moving = true;
+		});
 
-		ev.preventDefault();
+		window.addEventListener('mousemove', (e) => {
+			if (moving) {
+				left += e.movementX;
+				top += e.movementY;
+				node.style.top = `${top}px`;
+				node.style.left = `${left}px`;
+			}
+		});
 
-		x = ev.pageX + (ev.currentTarget.screenX - clientWidth);
-		y = ev.pageY + (ev.currentTarget.screenY - clientHeight);
-
-		console.log(x, ev.pageX);
-	};
-
-	let draggingFileInfo = false;
-
-	type IPointerDownParameter = PointerEvent & { currentTarget: EventTarget & HTMLDivElement };
-
-	const pointerdown = (ev: IPointerDownParameter) => {
-		ev.preventDefault();
-
-		if (!draggingFileInfo) draggingFileInfo = true;
-	};
+		window.addEventListener('mouseup', () => {
+			moving = false;
+		});
+	}
 </script>
 
-<svelte:window on:pointermove={pointermove} />
-
 <button
-	bind:clientWidth
-	bind:clientHeight
-	on:click|stopPropagation={closeInfo}
-	class="absolute mx-2 rounded-lg border-2 border-neutral-800 border-opacity-50 bg-neutral-900/80 backdrop-blur-sm"
-	style={`top: ${y}px;left: ${x}px;`}
+	use:dragElement
+	class="absolute mx-2 rounded-lg border-2 border-neutral-800 border-opacity-50 bg-neutral-900/80 shadow-md backdrop-blur-sm"
 >
-	{#await tryit(getFileInfos)(itemId)}
+	<div class="flex cursor-move justify-between p-2">
+		<span />
+
+		<button class="flex items-center gap-1 text-xs">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 20 20"
+				fill="currentColor"
+				class="h-4 w-4"
+			>
+				<path
+					fill-rule="evenodd"
+					d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z"
+					clip-rule="evenodd"
+				/>
+			</svg>
+
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 20 20"
+				fill="currentColor"
+				class="h-5 w-5"
+			>
+				<path
+					d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
+				/>
+			</svg>
+		</button>
+	</div>
+
+	{#await getFileInfos(itemId)}
 		<div>loading...</div>
-	{:then [err, data]}
-		<div on:pointerdown={pointerdown} class="cursor-grab p-2">
+	{:then data}
+		<div class="p-3">
 			{data?.Name}
 		</div>
 	{/await}
-	<div class="p-2">king 2</div>
 </button>
