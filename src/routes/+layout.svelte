@@ -22,7 +22,7 @@
 <Toaster
 	toastOptions={{
 		style:
-			'background-color: rgb(38 38 38 / 0.95); color: rgb(229 231 235); width: fit-content; z-index:10000;'
+			'background-color: rgb(38 38 38 / 0.8); color: rgb(229 231 235); width: fit-content; z-index:10000;'
 	}}
 	position={'top-center'}
 	gutter={5}

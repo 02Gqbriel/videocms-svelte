@@ -142,7 +142,7 @@ export async function createFile({ file }: ICreateFileParams): Promise<FileItem>
 		method: 'POST',
 		body: formData,
 		headers: {
-			Authorization: 'Basic ' + token,
+			Authorization: 'Basic ' + token
 		}
 	});
 
@@ -166,9 +166,11 @@ export async function createFile({ file }: ICreateFileParams): Promise<FileItem>
 		method: 'POST',
 		body: formData,
 		headers: {
-			Authorization: 'Basic ' + token,
+			Authorization: 'Basic ' + token
 		}
 	});
+
+	console.log(response);
 
 	toast.remove(loading);
 
@@ -202,7 +204,7 @@ export async function createFolder({ name, parentFolderID }: ICreateFolderParams
 	const res = await fetch(`${url}/api/folder`, {
 		method: 'POST',
 		headers: {
-			Authorization: 'Basic ' + token,
+			Authorization: 'Basic ' + token
 		},
 		body: formData
 	});
@@ -241,7 +243,7 @@ export async function moveFile({ id, parentFolderId, name, type }: IMoveFolderPa
 	const res = await fetch(`${url}/api/${type.toLowerCase()}`, {
 		method: 'PUT',
 		headers: {
-			Authorization: 'Basic ' + token,
+			Authorization: 'Basic ' + token
 		},
 		body: formData
 	});
@@ -271,7 +273,7 @@ export async function deleteFile({ id, type }: IDeleteFileParams) {
 	const res = await fetch(`${url}/api/${type.toLowerCase()}`, {
 		method: 'DELETE',
 		headers: {
-			Authorization: 'Basic ' + token,
+			Authorization: 'Basic ' + token
 		},
 		body: formData
 	});

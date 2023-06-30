@@ -36,6 +36,8 @@
 			for (const file of $files) {
 				await $createFileMutation.mutateAsync({ file: file.file });
 			}
+		} catch (ex) {
+			console.log(ex);
 		} finally {
 			files.set([]);
 		}
@@ -51,7 +53,7 @@
 	<form
 		on:click|stopPropagation={() => input.click()}
 		on:submit|preventDefault={uploadFiles}
-		class="relative cursor-pointer bg-neutral-900/10 grow flex rounded-md max-w-xl max-h-[95vh] my-3 backdrop-blur-sm p-1 text-neutral-500"
+		class="relative my-3 flex max-h-[95vh] max-w-xl grow cursor-pointer rounded-md bg-neutral-900/10 p-1 text-neutral-500 backdrop-blur-sm"
 	>
 		<input
 			bind:this={input}
@@ -59,19 +61,19 @@
 			multiple
 			type="file"
 			accept="video/*"
-			class="appearance-none invisible absolute left-0 top-0 bottom-0 right-0"
+			class="invisible absolute bottom-0 left-0 right-0 top-0 appearance-none"
 		/>
 		<div
-			class="grow border-4 border-dotted border-opacity-10 border-neutral-500 box-content rounded-md opacity-90 flex flex-col gap-2 items-center"
+			class="box-content flex grow flex-col items-center gap-2 rounded-md border-4 border-dotted border-neutral-500 border-opacity-10 opacity-90"
 		>
-			<div class="flex flex-col items-center gap-2 justify-center">
+			<div class="flex flex-col items-center justify-center gap-2">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke-width="1.5"
 					stroke="currentColor"
-					class="w-56 h-56"
+					class="h-56 w-56"
 				>
 					<path
 						stroke-linecap="round"
@@ -84,14 +86,14 @@
 
 				<span>or</span>
 
-				<h1 class="flex gap-2 items-center hover:bg-neutral-800/10 px-4 py-2 rounded-md">
+				<h1 class="flex items-center gap-2 rounded-md px-4 py-2 hover:bg-neutral-800/10">
 					<span class="italic">Browse files</span>
 
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 20 20"
 						fill="currentColor"
-						class="w-5 h-5 rotate-45"
+						class="h-5 w-5 rotate-45"
 					>
 						<path
 							fill-rule="evenodd"
@@ -103,18 +105,18 @@
 			</div>
 
 			{#if $files.length > 0}
-				<div class=" flex gap-2 m-3 justify-start flex-wrap overflow-y-scroll max-h-[47.5vh]">
+				<div class=" m-3 flex max-h-[47.5vh] flex-wrap justify-start gap-2 overflow-y-scroll">
 					{#each $files as file (file.hash)}
 						{#if file.isPreviewAvailable}
 							{@const fileSize = (file.file.size / (1024 * 1024)).toFixed(2)}
-							<div class="relative w-[255px] rounded-lg overflow-hidden">
-								<img src={file.url} alt="" class="w-full aspect-video " />
+							<div class="relative w-[255px] overflow-hidden rounded-lg">
+								<img src={file.url} alt="" class="aspect-video w-full" />
 
 								<div
-									class="absolute top-0 left-0 right-0 overflow-hidden rounded p-1 bg-neutral-800/40 backdrop-blur-sm flex justify-between items-center"
+									class="absolute left-0 right-0 top-0 flex items-center justify-between overflow-hidden rounded bg-neutral-800/40 p-1 backdrop-blur-sm"
 								>
 									<div class="w-4/5">
-										<p class="text-sm font-normal text-neutral-100/70 max-h-5  text-ellipsis">
+										<p class="max-h-5 text-ellipsis text-sm font-normal text-neutral-100/70">
 											{file.file.name}
 										</p>
 
@@ -135,7 +137,7 @@
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 20 20"
 											fill="currentColor"
-											class="w-5 h-5 fill-neutral-100/90 group-hover/remove:fill-red-500/90"
+											class="h-5 w-5 fill-neutral-100/90 group-hover/remove:fill-red-500/90"
 										>
 											<path
 												d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
@@ -145,17 +147,17 @@
 								</div>
 							</div>
 						{:else}
-							<div class="w-[255px] aspect-video bg-neutral-800 animate-pulse rounded" />
+							<div class="aspect-video w-[255px] animate-pulse rounded bg-neutral-800" />
 						{/if}
 					{/each}
 				</div>
 
-				<div class="w-full flex">
+				<div class="flex w-full">
 					<button
 						on:click|stopPropagation
 						disabled={loading}
 						type="submit"
-						class="text-blue-100 bg-blue-900 hover:bg-blue-700/90 focus:outline-none font-medium px-4 rounded-lg text-sm py-2.5 text-center grow mx-3 mb-4"
+						class="mx-3 mb-4 grow rounded-lg bg-blue-900 px-4 py-2.5 text-center text-sm font-medium text-blue-100 hover:bg-blue-700/90 focus:outline-none"
 					>
 						{#if loading}
 							<svg
