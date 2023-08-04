@@ -23,6 +23,9 @@
 		}
 	});
 
+	let files = $selected.filter((v) => v.type === 'File');
+	let folders = $selected.filter((v) => v.type === 'Folder');
+
 	const handleDelete = () => {
 		const folders: number[] = [];
 		const files: number[] = [];
@@ -61,16 +64,14 @@
 
 <Modal bind:showModal={$confirmation}>
 	<div
-		class="relative my-3 flex max-h-[95vh] max-w-xl grow flex-col gap-7 rounded-md border border-neutral-900 bg-neutral-900/10 p-3 backdrop-blur-sm"
+		class="relative flex max-h-[95vh] max-w-xl grow gap-7 rounded-md border border-neutral-900 bg-neutral-900/10 px-6 py-3 pt-5 backdrop-blur-sm"
 	>
-		<h1 class="flex items-center justify-between gap-3 text-xl font-medium">
-			Are you sure?
-
+		<span class="h-min rounded-full bg-red-500">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 24 24"
 				fill="currentColor"
-				class="absolute right-5 top-3 h-12 w-12"
+				class="m-2 h-16 w-16 fill-neutral-900"
 			>
 				<path
 					fill-rule="evenodd"
@@ -78,24 +79,60 @@
 					clip-rule="evenodd"
 				/>
 			</svg>
-		</h1>
+		</span>
 
-		<p class="opacity-70">
-			The selected files are permanently deleted and can not be recovered in hinesight. Do you still
-			want to proceed?
-		</p>
+		<div class="flex grow flex-col gap-6">
+			<h1 class="text-2xl font-semibold">Delete files for ever?</h1>
 
-		<div class="flex gap-3 self-end">
-			<button class="rounded px-5 py-1 hover:bg-neutral-800/50" on:click={handleCancel}>
-				Cancel
-			</button>
+			<div class="flex flex-col gap-4">
+				<p>You are about to delete the following:</p>
 
-			<button
-				class="rounded bg-red-800 px-5 py-1 transition-all hover:bg-red-800/70"
-				on:click|preventDefault={handleDelete}
-			>
-				Delete
-			</button>
+				<p class="border-l-2 border-red-500 pl-2 font-light italic">
+					{#if files.length > 0}
+						{files.length}
+
+						{' '}
+
+						{#if files.length > 1}
+							files
+						{:else}
+							file
+						{/if}
+
+						{' '}
+
+						{#if folders.length > 0}
+							and
+
+							{' '}
+						{/if}
+					{/if}
+
+					{#if folders.length > 0}
+						{folders.length}
+
+						{' '}
+
+						{#if folders.length > 1}
+							folders
+						{:else}
+							folder
+						{/if}
+					{/if}
+				</p>
+
+				<p>This action is irreversible. <br /> Are you sure you want to proceed?</p>
+			</div>
+
+			<div class="flex gap-2 self-end">
+				<button on:click={handleCancel} class="rounded-md px-10 py-1.5 text-sm hover:bg-neutral-800"
+					>Cancel</button
+				>
+
+				<button on:click={handleDelete} class="rounded-md bg-red-700 px-10 py-1.5 text-sm"
+					>Delete</button
+				>
+			</div>
 		</div>
 	</div>
 </Modal>

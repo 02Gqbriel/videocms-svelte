@@ -3,6 +3,7 @@ import { isEqual } from 'radash';
 import type { IMoveFolderParams } from './files';
 import toast from 'svelte-french-toast';
 import { writable } from 'svelte/store';
+import { isSelected, unselectItem } from './selected';
 
 export interface IDragItem {
 	id: number;
@@ -37,6 +38,10 @@ export function dragend(
 		return toast.error(`${draggedItem.type} cannot be moved to a file`);
 
 	if (mutate != null) {
+		if (isSelected(draggedItem.id, draggedItem.type)) {
+			unselectItem(draggedItem.id, draggedItem.type);
+		}
+
 		mutate({
 			id: draggedItem.id,
 			name: draggedItem.name,

@@ -178,7 +178,7 @@
 
 		<div class="flex gap-2">
 			<button
-				class="flex w-[122px] items-center justify-start text-xs"
+				class="flex w-[157px] items-center justify-start text-xs"
 				on:click={() => setKey('UpdatedAt')}
 			>
 				<span class="font-semibold">LAST MODIFIED</span>
@@ -224,8 +224,6 @@
 					</svg>
 				{/if}
 			</button>
-
-			<span class="h-5 w-5" />
 		</div>
 	</div>
 </div>

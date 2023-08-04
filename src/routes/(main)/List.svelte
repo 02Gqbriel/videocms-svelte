@@ -172,7 +172,7 @@
 	bind:this={viewport}
 	bind:offsetHeight={viewport_height}
 	on:scroll={handle_scroll}
-	style="height: {height}; overflow: overlay;"
+	style="height: {height};"
 >
 	<svelte-virtual-list-contents
 		bind:this={contents}
@@ -196,7 +196,6 @@
 
 <style>
 	svelte-virtual-list-viewport {
-		position: relative;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		display: block;
@@ -205,9 +204,5 @@
 	svelte-virtual-list-contents,
 	svelte-virtual-list-row {
 		display: block;
-	}
-
-	svelte-virtual-list-row {
-		overflow: hidden;
 	}
 </style>

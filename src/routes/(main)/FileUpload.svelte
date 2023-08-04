@@ -60,7 +60,7 @@
 			on:input={handleInput}
 			multiple
 			type="file"
-			accept="video/*"
+			accept="video/*, *.mkv"
 			class="invisible absolute bottom-0 left-0 right-0 top-0 appearance-none"
 		/>
 		<div

@@ -27,7 +27,7 @@
 		scrollbar-color: var(--thumbBG) var(--scrollbarBG);
 
 		font-weight: 500;
-		font-synthesis: none;
+		font-synthesis: style;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 

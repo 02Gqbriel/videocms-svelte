@@ -39,16 +39,16 @@ export interface FileInfos {
 
 export interface Audio {
 	Name: string;
-	Type: Type;
+	Type: AudioType;
 	Lang: string;
 	Ready: boolean;
 }
 
-export type Type = 'hls' | 'ass' | 'vtt';
+export type AudioType = 'hls' | 'ass' | 'vtt';
 
 export interface Quality {
 	Name: string;
-	Type: string;
+	Type: Type;
 	Height: number;
 	Width: number;
 	AvgFrameRate: number;
@@ -57,6 +57,8 @@ export interface Quality {
 	Progress: number;
 	Size: number;
 }
+
+export type Type = 'hls' | 'h264';
 
 export const files = writable<(FileItem | FolderItem)[]>([]);
 
@@ -268,7 +270,7 @@ export async function deleteFile({ id, type }: IDeleteFileParams) {
 	const formData = new FormData();
 	const token = get(tokenStore);
 
-	formData.append('LinkID', id.toString());
+	formData.append(type == 'File' ? 'LinkID' : 'FolderID', id.toString());
 
 	const res = await fetch(`${url}/api/${type.toLowerCase()}`, {
 		method: 'DELETE',
@@ -298,8 +300,8 @@ export async function deleteMany({ items, type }: IDeleteManyParams) {
 	const token = get(tokenStore);
 
 	const body = {
-		[type == 'Folder' ? 'FolderIDs' : 'LinkIDs']: items.map((id) => ({
-			[type == 'Folder' ? 'FolderID' : 'LinkID']: id
+		[type == 'Folder' ? 'FolderIDs' : 'FolderIDs']: items.map((id) => ({
+			[type == 'Folder' ? 'FolderID' : 'FolderID']: id
 		}))
 	};
 
