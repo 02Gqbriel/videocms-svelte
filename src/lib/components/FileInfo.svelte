@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { deleteFileInfo } from '$lib/util/fileinfostack';
 	import {
 		getFileInfos,
 		type FileInfos,
@@ -12,7 +13,6 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { group, listify } from 'radash';
 
-	export let isInfoOpen: boolean;
 	export let data: FileInfos;
 	export let id: number;
 
@@ -109,7 +109,8 @@
 
 <div
 	use:dragElement
-	class="fixed z-50 mx-2 max-h-[80vh] w-screen max-w-screen-sm overflow-y-auto rounded-lg border-2 border-neutral-800 border-opacity-50 bg-neutral-900/80 shadow-md backdrop-blur-sm"
+	tabindex="-2"
+	class="fixed z-50 mx-2 max-h-[80vh] w-screen max-w-screen-sm overflow-y-auto rounded-lg border-2 border-neutral-800 border-opacity-50 bg-neutral-900/80 shadow-md backdrop-blur-sm focus:z-[100]"
 >
 	<div
 		data-drag="true"
@@ -136,7 +137,7 @@
 				</svg>
 			</button>
 
-			<button on:click={() => (isInfoOpen = false)}>
+			<button on:click={() => deleteFileInfo(id)}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"

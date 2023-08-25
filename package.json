@@ -11,7 +11,7 @@
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
 		"docker:rm": "docker rm -f $(docker ps -a -q)",
-		"docker": "docker run -d -p 127.0.0.1:3000:3000/tcp --env EncodingEnabled=true --env UploadEnabled=true --env RatelimitEnabled=false --env MaxUploadFilesize=99999999999999 --env MaxPostSize=9999999999999 kirari04/videocms:demo"
+		"docker": "docker run -d -p 127.0.0.1:3000:3000/tcp --env EncodingEnabled=true --env UploadEnabled=true --env RatelimitEnabled=false --env MaxUploadFilesize=99999999999999 --env MaxPostSize=9999999999999 kirari04/videocms:alpha-1"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^2.0.3",

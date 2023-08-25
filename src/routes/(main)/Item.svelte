@@ -2,6 +2,7 @@
 	import FileInfo from '$lib/components/FileInfo.svelte';
 	import { login } from '$lib/util/auth';
 	import { dragend, dragging, dragover, dragstart, type IDragItem } from '$lib/util/dragndrop';
+	import { pushFileInfo } from '$lib/util/fileinfostack';
 	import { moveFile, type FileItem, type FolderItem, getFileInfos } from '$lib/util/files';
 	import { isAllSelected, isSelected, selectItem, unselectItem } from '$lib/util/selected';
 	import { url } from '$lib/util/stores';
@@ -53,6 +54,8 @@
 	const openInfo = (ev: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) => {
 		ev.preventDefault();
 		ev.stopImmediatePropagation();
+
+		pushFileInfo({ id: item.ID, title: item.Name, minimzed: false, loading: true });
 
 		if (ev.currentTarget.tagName !== 'div') isInfoOpen = true;
 	};
@@ -306,10 +309,4 @@
 			</button>
 		</div>
 	</div>
-{/if}
-
-{#if isInfoOpen}
-	{#await getFileInfos(item.ID) then data}
-		<FileInfo bind:isInfoOpen {data} id={item.ID} />
-	{/await}
 {/if}

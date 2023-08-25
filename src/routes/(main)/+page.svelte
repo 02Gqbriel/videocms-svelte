@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getFiles } from '$lib/util/files';
+	import { getFileInfos, getFiles } from '$lib/util/files';
 	import type { FolderItem, FileItem } from '$lib/util/files';
 	import { createQuery } from '@tanstack/svelte-query';
 
@@ -11,6 +11,8 @@
 	import SortRow from './SortRow.svelte';
 	import { confirmation, fileUpload, newFolder } from '$lib/util/stores';
 	import { dragging } from '$lib/util/dragndrop';
+	import { fileInfoStack } from '$lib/util/fileinfostack';
+	import FileInfo from '$lib/components/FileInfo.svelte';
 
 	let innerHeight: number = 0;
 
@@ -47,6 +49,14 @@
 		{#await import('./DragItem.svelte') then { default: DragItem }}
 			<DragItem />
 		{/await}
+	{/if}
+
+	{#if $fileInfoStack.length > 0}
+		{#each $fileInfoStack as { id, data, loading } (id)}
+			{#if !loading && data}
+				<FileInfo {data} {id} />
+			{/if}
+		{/each}
 	{/if}
 
 	{#if $query.isLoading}
